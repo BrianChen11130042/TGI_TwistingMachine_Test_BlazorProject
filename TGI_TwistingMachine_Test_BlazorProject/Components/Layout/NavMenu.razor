@@ -1,36 +1,21 @@
-﻿@inject NavigationManager NavigationManager
-@implements IDisposable
+﻿@implements IDisposable
 
-<div>
-    <DxMenu Orientation="@Orientation.Vertical" CssClass="menu">
+<div class="card p-2">
+    <DxMenu Orientation="@Orientation.Horizontal" CssClass="menu" ItemsPosition="ItemPosition.Center">
         <Items>
-            <DxMenuItem NavigateUrl="./" Text="Home" CssClass="@MenuItemCssClass("")" IconCssClass="icon icon-home"></DxMenuItem>
-            <DxMenuItem NavigateUrl="./counter" Text="Counter" CssClass="@MenuItemCssClass("counter")" IconCssClass="icon icon-counter"></DxMenuItem>
-            <DxMenuItem NavigateUrl="./weather" Text="Weather" CssClass="@MenuItemCssClass("weather")" IconCssClass="icon icon-weather"></DxMenuItem>
+            <DxMenuItem NavigateUrl="/" Text="Home" CssClass="menu-item" IconCssClass="icon icon-home"></DxMenuItem>
+            
         </Items>
     </DxMenu>
 </div>
 
 @code {
-    private string? currentPage;
-
-    protected override void OnInitialized() {
-        currentPage = GetCurrentPage();
-        NavigationManager.LocationChanged += OnLocationChanged;
+    protected override async Task OnInitializedAsync()
+    {
+        //await base.OnInitializedAsync();
     }
-
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e) {
-        currentPage = GetCurrentPage();
-        InvokeAsync(StateHasChanged);
-    }
-
-    private string? MenuItemCssClass(string itemPath) {
-        return string.Equals(currentPage, itemPath, StringComparison.OrdinalIgnoreCase) ? "menu-item-active" : null;
-    }
-
-    private string GetCurrentPage() => NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Split('?', '#')[0];
 
     public void Dispose() {
-        NavigationManager.LocationChanged -= OnLocationChanged;
+        
     }
 }

@@ -5,6 +5,8 @@ VisualStudioVersion = 17.14.37411.7 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TGI_TwistingMachine_Test_BlazorProject", "TGI_TwistingMachine_Test_BlazorProject\TGI_TwistingMachine_Test_BlazorProject.csproj", "{D2DBCB28-A560-42F9-AAEB-14D5DFB4B2C8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonRazorLibraryB", "..\CommonRazorLibraryB\CommonRazorLibraryB\CommonRazorLibraryB.csproj", "{D71B14AF-5BAD-A300-9C06-035ABA911413}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{D2DBCB28-A560-42F9-AAEB-14D5DFB4B2C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2DBCB28-A560-42F9-AAEB-14D5DFB4B2C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2DBCB28-A560-42F9-AAEB-14D5DFB4B2C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D71B14AF-5BAD-A300-9C06-035ABA911413}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D71B14AF-5BAD-A300-9C06-035ABA911413}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D71B14AF-5BAD-A300-9C06-035ABA911413}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D71B14AF-5BAD-A300-9C06-035ABA911413}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

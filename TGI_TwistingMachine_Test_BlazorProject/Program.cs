@@ -1,4 +1,5 @@
-﻿using TGI_TwistingMachine_Test_BlazorProject.Components;
+﻿using CommonRazorLibraryB.UIComponentTools.ToastMessage;
+using TGI_TwistingMachine_Test_BlazorProject.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,8 @@ builder.Services.AddDevExpressBlazor(options =>
     options.SizeMode = DevExpress.Blazor.SizeMode.Medium;
 });
 builder.Services.AddMvc();
+
+builder.Services.AddScoped<IToastMessage, ToastMessage>();
 
 var app = builder.Build();
 
