@@ -1,7 +1,18 @@
 ﻿using CommonRazorLibraryB.UIComponentTools.ToastMessage;
+using Microsoft.Extensions.Hosting.WindowsServices;
 using TGI_TwistingMachine_Test_BlazorProject.Components;
 
-var builder = WebApplication.CreateBuilder(args);
+//var builder = WebApplication.CreateBuilder(args);
+
+//指定在Windows Service」環境下正確運作
+var webApOpts = new WebApplicationOptions
+{
+    ContentRootPath = WindowsServiceHelpers.IsWindowsService() ?
+        AppContext.BaseDirectory : default,
+    Args = args
+};
+var builder = WebApplication.CreateBuilder(webApOpts);
+builder.Host.UseWindowsService();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
