@@ -1,0 +1,101 @@
+﻿@page "/ConnectConfig"
+@using CommonRazorLibraryB.Library.TGITwistingMachine.Config
+@using CommonRazorLibraryB.Library.TGITwistingMachine.UIComponent
+@using CommonRazorLibraryB.Manager.ModbusTcp.Master
+@using CommonRazorLibraryB.Manager.ModbusTcp.Master.UIComponent
+@using CommonRazorLibraryB.UIComponentTools.ToastMessage
+@using TGI_TwistingMachine_Test_BlazorProject.Service.MachineService
+@inject IMachineService IService
+@inject IToastMessage IToast
+@implements IDisposable
+
+<ModbusTcpMasterConfigGrid Title="Modbus Tcp Config"
+						   Data="listModbusTcp"
+                           PageSize="12"
+						   EditModelSaving="editModbusTcp">
+
+</ModbusTcpMasterConfigGrid>
+
+<TgiTwistConfigGrid Title="Twist Config"
+					Data="listTwst"
+                    PageSize="12"
+					EditModelSaving="editTwist">
+
+</TgiTwistConfigGrid>
+
+<div class="text-center mt-5">
+	<DxButton Text="Initialization"
+			  RenderStyle="ButtonRenderStyle.Danger"
+			  SizeMode="SizeMode.Large"
+			  Click="init" />
+</div>
+
+@code {
+
+	List<ModbusTcpMasterConfig> listModbusTcp { get; set; } = new List<ModbusTcpMasterConfig>();
+	List<TgiTwistConfig> listTwst { get; set; } = new List<TgiTwistConfig>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		IService.dgInitResult += _handleInitResult;
+		IService.dgRefreshConfigPage += _handleRefreshPage;
+
+		await LoadPageData();
+	}
+
+	async Task LoadPageData()
+	{
+		listModbusTcp = await IService.GetModbusTcpConfig();
+		listTwst = await IService.GetTwistConfig();
+	}
+
+	async Task editModbusTcp(GridEditModelSavingEventArgs e)
+	{
+		ModbusTcpMasterConfig edit = (ModbusTcpMasterConfig)e.EditModel;
+
+		await IService.SetModbusTcpConfig(edit);
+
+		IToast.NotifySuccess("Modify successfully");
+	}
+
+	async Task editTwist(GridEditModelSavingEventArgs e)
+	{
+		TgiTwistConfig edit = (TgiTwistConfig)e.EditModel;
+
+		await IService.SetTwistConfig(edit);
+
+		IToast.NotifySuccess("Modify successfully");
+	}
+
+	async Task init()
+	{
+		IToast.NotifyInfo("Init Start");
+
+		await IService.Init();
+	}
+
+	async Task _handleInitResult(bool success, string msg)
+	{
+		if (success)
+		{
+			IToast.NotifySuccess(msg);
+		}
+		else
+		{
+			IToast.NotifyError(msg);
+		}
+	}
+
+	async Task _handleRefreshPage()
+	{
+		await LoadPageData();
+		await InvokeAsync(StateHasChanged);
+	}
+
+	public void Dispose()
+	{
+		IService.dgInitResult -= _handleInitResult;
+		IService.dgRefreshConfigPage -= _handleRefreshPage;
+	}
+
+}

@@ -1,13 +1,21 @@
-﻿@implements IDisposable
+﻿@using DevExpress.Images.Blazor
+@implements IDisposable
 
 <div class="card p-2">
     <DxMenu Orientation="@Orientation.Horizontal" CssClass="menu" ItemsPosition="ItemPosition.Center">
         <Items>
-            <DxMenuItem NavigateUrl="/" Text="Home" CssClass="menu-item" IconCssClass="icon icon-home"></DxMenuItem>
+            <DxMenuItem NavigateUrl="/" Text="Home" IconUrl="@IconStatic.Home.Fluent.Regular.Monochrome.Size32"></DxMenuItem>
             
+            <DxMenuItem Text="Setting" IconUrl="@IconStatic.SettingsGear.Fluent.Regular.Monochrome.Size48">
+                <Items>
+                    <DxMenuItem NavigateUrl="/ConnectConfig" Text="Connection" />
+                </Items>
+            </DxMenuItem>
         </Items>
     </DxMenu>
 </div>
+
+<br/>
 
 @code {
     protected override async Task OnInitializedAsync()

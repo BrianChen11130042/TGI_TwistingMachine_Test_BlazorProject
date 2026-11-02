@@ -1,37 +1,84 @@
 ﻿using CommonRazorLibraryB.Tools.NLogWritter;
+using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Observer.Interface;
 
 namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Observer
 {
     public partial class ObserverLibrary : INLogObservable
     {
-        List<INLogObserver> os { get; set; }
+        List<INLogObserver> osNLog { get; set; }
 
         public void AddNLogObserver(INLogObserver o)
         {
-            if (os is null)
-                os = new List<INLogObserver>();
+            if (osNLog is null)
+                osNLog = new List<INLogObserver>();
 
-            if(!os.Contains(o))
+            if(!osNLog.Contains(o))
             {
-                os.Add(o);
+                osNLog.Add(o);
             }
         }
 
         public void RemoveNLogObserver(INLogObserver o)
         {
-            if(os is not null && os.Contains(o))
+            if(osNLog is not null && osNLog.Contains(o))
             {
-                os.Remove(o);
+                osNLog.Remove(o);
             }
         }
 
         public async Task NotifyNLog(ENLogLevel level, string msg)
         {
-            if(os is not null)
+            if(osNLog is not null)
             {
-                foreach(var o in os)
+                foreach(var o in osNLog)
                 {
                     await o.HandleNLog(level, msg);
+                }
+            }
+        }
+    }
+
+    public partial class ObserverLibrary : ISystemObserverable
+    {
+        List<ISystemObserver> osSystem { get; set; }
+
+        public void AddSystemObserver(ISystemObserver o)
+        {
+            if (osSystem == null)
+                osSystem = new List<ISystemObserver>();
+
+            if(!osSystem.Contains(o))
+            {
+                osSystem.Add(o);
+            }
+        }
+
+        public void RemoveSystemObserver(ISystemObserver o)
+        {
+            if(osSystem != null && osSystem.Contains(o))
+            {
+                osSystem.Remove(o);
+            }
+        }
+
+        public async Task NotifyInitResult(bool success, string msg)
+        {
+            if(osSystem != null)
+            {
+                foreach(var o in osSystem)
+                {
+                    await o.HandleInitResult(success, msg);
+                }
+            }
+        }
+
+        public async Task NotifyDisconnect()
+        {
+            if(osSystem != null)
+            {
+                foreach(var o in osSystem)
+                {
+                    await o.HandleDisconnect();
                 }
             }
         }

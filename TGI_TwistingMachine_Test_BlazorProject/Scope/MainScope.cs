@@ -7,6 +7,17 @@
         public TgiScope(IServiceProvider provider)
         {
             this.provider = provider;
+            _createAll();
+        }
+
+        void _createAll()
+        {
+            _createTool();
+            _createObserverLibrary();
+            _createDataLibrary();
+            _createManager();
+            _createTwist();
+            _createApplication();
         }
     }
 }

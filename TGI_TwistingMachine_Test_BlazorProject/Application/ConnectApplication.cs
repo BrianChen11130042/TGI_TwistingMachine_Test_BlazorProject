@@ -1,6 +1,7 @@
 ﻿using CommonRazorLibraryB.Library.TGITwistingMachine.Config;
 using CommonRazorLibraryB.Manager.ModbusTcp.Master;
 using TGI_TwistingMachine_Test_BlazorProject.EquipName.TwistingMachine;
+using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Observer.Interface;
 
 namespace TGI_TwistingMachine_Test_BlazorProject.Application
 {
@@ -15,7 +16,13 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Application
             this.modbusTcpManager = modbusTcpManager;
             this.twistConfigManager = twistConfigManager;
         }
+
+        public dgSysInitResult dgSysInitResult;
+        public dgSysDisconnect dgSysDisconnect;
     }
+
+    public delegate Task dgSysInitResult(bool success, string msg);
+    public delegate Task dgSysDisconnect(string msg);
 
     public partial class ConnectApplication
     {
@@ -63,6 +70,20 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Application
         {
             twistConfigManager.Set(config.device, config);
             twistConfigManager.Save();
+        }
+    }
+
+    public partial class ConnectApplication : ISystemObserver
+    {
+
+        public async Task HandleInitResult(bool success, string msg)
+        {
+            dgSysInitResult?.Invoke(success, msg);
+        }
+
+        public async Task HandleDisconnect()
+        {
+            dgSysDisconnect?.Invoke(string.Empty);
         }
     }
 }
