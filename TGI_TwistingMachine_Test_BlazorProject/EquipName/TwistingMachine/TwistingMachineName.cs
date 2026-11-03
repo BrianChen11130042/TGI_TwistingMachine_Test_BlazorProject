@@ -2,10 +2,10 @@
 {
     public enum ETwist
     {
-        Twist1,
-        Twist2,
-        Twist3,
-        Twist4,
-        Twist5
+        Twist1 = 1,
+        Twist2 = 2,
+        Twist3 = 3,
+        Twist4 = 4,
+        Twist5 = 5
     }
 }
