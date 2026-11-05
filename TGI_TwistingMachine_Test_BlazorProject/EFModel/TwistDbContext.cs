@@ -15,6 +15,8 @@ namespace TGI_TwistingMachine_Test_BlazorProject.EFModel
 
         public virtual DbSet<BobbinTable> BobbinTables { get; set; }
 
+        public virtual DbSet<LogTable> LogTables { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TwistingMachineTable>(entity =>
@@ -58,7 +60,18 @@ namespace TGI_TwistingMachine_Test_BlazorProject.EFModel
 
             });
 
+            modelBuilder.Entity<LogTable>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).UseIdentityColumn();
 
+                entity.Property(e => e.LogType).HasMaxLength(500);
+
+                entity.Property(e => e.Equipment).HasMaxLength(500);
+
+                entity.Property(e => e.RecordTime).HasColumnType("datetime2");
+
+            });
         }
     }
 }
