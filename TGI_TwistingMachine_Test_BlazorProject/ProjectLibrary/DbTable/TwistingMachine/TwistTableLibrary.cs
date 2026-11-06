@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TGI_TwistingMachine_Test_BlazorProject.DtoModel;
 using TGI_TwistingMachine_Test_BlazorProject.EFModel;
+using TGI_TwistingMachine_Test_BlazorProject.EquipName.TwistingMachine;
 
 namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.DbTable.TwistingMachine
 {
@@ -29,7 +31,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.DbTable.Twisting
 
     public partial class TwistTableLibrary : ITwistTableLibrary
     {
-        public async Task<(bool status, string msg)> InitTwistInfromInQueue()
+        public async Task<(bool status, string msg)> InitListTwistInQueue()
         {
             try
             {
@@ -52,6 +54,57 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.DbTable.Twisting
             catch(Exception ex)
             {
                 return (false, ex.Message);
+            }
+        }
+
+        public async Task<(bool status, string msg)> UpsertTwistTable(TwistingMachineTable data)
+        {
+            try
+            {
+                using (var scope = serviceProvider.CreateScope())
+                {
+                    TwistDbContext context = scope.ServiceProvider.GetRequiredService<TwistDbContext>();
+
+                    TwistingMachineTable target = await context.TwistingMachineTables.FirstOrDefaultAsync(x => x.Machine == data.Machine);
+
+                    if(target != null)
+                    {
+                        context.Entry(target).CurrentValues.SetValues(data);
+                    }
+                    else
+                    {
+                        context.TwistingMachineTables.Add(data);
+                    }
+
+                    await context.SaveChangesAsync();
+
+                    UpsertTwistTableInQueue(data);
+
+                    return (true, string.Empty);
+                }
+            }
+            catch(Exception ex)
+            {
+                return (false, ex.Message);
+            }
+        }
+
+        public void UpsertTwistTableInQueue(TwistingMachineTable data)
+        {
+            var target = ListTwistInQueue.FirstOrDefault(x => x.Machine == data.Machine);
+
+            if(target != null)
+            {
+                target.MachineNumber = data.MachineNumber;
+                target.ProcessState = data.ProcessState;
+                target.MachineStatus = data.MachineStatus;
+                target.MissionStartedInform = data.MissionStartedInform;
+                target.MissionCompletedInform = data.MissionCompletedInform;
+                target.AutoMode = data.AutoMode;
+            }
+            else
+            {
+                ListTwistInQueue.Add(data);
             }
         }
     }

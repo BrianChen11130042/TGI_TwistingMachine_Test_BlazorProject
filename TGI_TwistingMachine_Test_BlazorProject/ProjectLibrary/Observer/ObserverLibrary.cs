@@ -1,4 +1,5 @@
 ﻿using CommonRazorLibraryB.Tools.NLogWritter;
+using TGI_TwistingMachine_Test_BlazorProject.EFModel;
 using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Observer.Interface;
 
 namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Observer
@@ -79,6 +80,41 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Observer
                 foreach(var o in osSystem)
                 {
                     await o.HandleDisconnect();
+                }
+            }
+        }
+    }
+
+    public partial class ObserverLibrary : ITwistInformObserverable
+    {
+        List<ITwistInformObserver> osTwist { get; set; }
+
+        public void AddTwistInformObserver(ITwistInformObserver o)
+        {
+            if (osTwist == null)
+                osTwist = new List<ITwistInformObserver>();
+
+            if(!osTwist.Contains(o))
+            {
+                osTwist.Add(o);
+            }
+        }
+
+        public void RemoveTwistInformObserver(ITwistInformObserver o)
+        {
+            if(osTwist != null && osTwist.Contains(o))
+            {
+                osTwist.Remove(o);
+            }
+        }
+
+        public async Task NotifyTwistUpdated(List<TwistingMachineTable> list)
+        {
+            if(osTwist != null)
+            {
+                foreach(var o in osTwist)
+                {
+                    await o.HandleTwistUpdated(list);
                 }
             }
         }
