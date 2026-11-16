@@ -1,12 +1,11 @@
 ﻿using CommonRazorLibraryB.Library.TGITwistingMachine.Adapter;
 using CommonRazorLibraryB.Library.TGITwistingMachine.Package;
 using TGI_TwistingMachine_Test_BlazorProject.DtoModel;
-using TGI_TwistingMachine_Test_BlazorProject.EquipName.TwistingMachine;
 using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data;
 
 namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistRegular
 {
-    public partial class TwistRegularTaskPack
+    public partial class TwistRegularTaskPack<ETwist>
     {
         readonly List<ETwist> listTwist;
 
@@ -29,7 +28,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistRegular
         }
     }
 
-    public partial class TwistRegularTaskPack : ITwistRegularTaskPack
+    public partial class TwistRegularTaskPack<ETwist> : ITwistRegularTaskPack
     {
         public async Task<bool> GetTwistStatus()
         {
@@ -43,7 +42,9 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistRegular
                 {
                     if(await ITwistOp.GetTwistStatus(twist))
                     {
-                        IDataLib.DcTwistStatusDto.Add(twist, new TwistStatusDto()
+                        int _key = ITwistPack.Packages[twist].property.get.machineNumber;
+
+                        IDataLib.DcTwistStatusDto.Add(_key, new TwistStatusDto()
                         {
                             machineNumber = ITwistPack.Packages[twist].property.get.machineNumber,
                             processState = ITwistPack.Packages[twist].property.get.processState,
@@ -71,14 +72,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistRegular
 
         public async Task<bool> UpsertTwistTable()
         {
-            if(await IDataLib.UpsertTwistTable())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return await IDataLib.UpsertTwistTable();
         }
 
         public async Task NotifyTwistUpdate()

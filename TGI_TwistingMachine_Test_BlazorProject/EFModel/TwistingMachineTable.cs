@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using TGI_TwistingMachine_Test_BlazorProject.EquipName.TwistingMachine;
 
 namespace TGI_TwistingMachine_Test_BlazorProject.EFModel
 {
@@ -9,10 +8,6 @@ namespace TGI_TwistingMachine_Test_BlazorProject.EFModel
         [Key]
         public Guid Id { get; set; }
 
-        //自訂義機台名稱
-        public ETwist Machine { get; set; }
-
-        //PLC讀回的編號
         public int MachineNumber { get; set; }
 
         public int ProcessState { get; set; }

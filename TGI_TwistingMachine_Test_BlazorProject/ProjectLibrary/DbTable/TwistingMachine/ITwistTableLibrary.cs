@@ -1,6 +1,4 @@
-﻿using TGI_TwistingMachine_Test_BlazorProject.DtoModel;
-using TGI_TwistingMachine_Test_BlazorProject.EFModel;
-using TGI_TwistingMachine_Test_BlazorProject.EquipName.TwistingMachine;
+﻿using TGI_TwistingMachine_Test_BlazorProject.EFModel;
 
 namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.DbTable.TwistingMachine
 {

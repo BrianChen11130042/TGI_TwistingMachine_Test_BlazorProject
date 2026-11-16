@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using TGI_TwistingMachine_Test_BlazorProject.EquipName.TwistingMachine;
+using TGI_TwistingMachine_Test_BlazorProject.EFModel.ParamType;
 
 namespace TGI_TwistingMachine_Test_BlazorProject.EFModel
 {

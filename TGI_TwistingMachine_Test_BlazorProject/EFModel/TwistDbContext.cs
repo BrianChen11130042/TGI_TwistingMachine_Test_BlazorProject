@@ -23,8 +23,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.EFModel
             {
                 entity.HasKey(e => e.Id);
 
-                entity.Property(e => e.Machine).HasConversion<int>().IsRequired();
-                entity.HasIndex(e => e.Machine).IsUnique();
+                entity.HasIndex(e => e.MachineNumber).IsUnique();
 
                 entity.HasMany(e => e.CakeTables).WithOne(e => e.MachineTable).HasForeignKey(e => e.MachineId);
 

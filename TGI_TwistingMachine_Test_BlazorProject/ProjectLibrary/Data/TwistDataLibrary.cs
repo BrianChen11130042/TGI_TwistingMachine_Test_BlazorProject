@@ -1,7 +1,6 @@
 ﻿using CommonRazorLibraryB.Tools.NLogWritter;
 using TGI_TwistingMachine_Test_BlazorProject.DtoModel;
 using TGI_TwistingMachine_Test_BlazorProject.EFModel;
-using TGI_TwistingMachine_Test_BlazorProject.EquipName.TwistingMachine;
 using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.DbTable.MissionLogs;
 using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.DbTable.TwistingMachine;
 using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Observer.Interface;
@@ -45,9 +44,9 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data
 
     public partial class TwistDataLibrary : ITwistDataLibrary
     {
-        Dictionary<ETwist, ushort> _dcTwistMissionCmd { get; set; } = new Dictionary<ETwist, ushort>();
+        Dictionary<int, ushort> _dcTwistMissionCmd { get; set; } = new Dictionary<int, ushort>();
 
-        public Dictionary<ETwist, ushort> DcTwistMissionCmd
+        public Dictionary<int, ushort> DcTwistMissionCmd
         {
             get
             {
@@ -59,9 +58,9 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data
             }
         }
 
-        Dictionary<ETwist, ushort> _dcTwistAutoCmd { get; set; } = new Dictionary<ETwist, ushort>();
+        Dictionary<int, ushort> _dcTwistAutoCmd { get; set; } = new Dictionary<int, ushort>();
 
-        public Dictionary<ETwist, ushort> DcTwistAutoCmd
+        public Dictionary<int, ushort> DcTwistAutoCmd
         {
             get
             {
@@ -73,9 +72,9 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data
             }
         }
 
-        Dictionary<ETwist, TwistStatusDto> _dcTwistStatusDto { get; set; } = new Dictionary<ETwist, TwistStatusDto>();
+        Dictionary<int, TwistStatusDto> _dcTwistStatusDto { get; set; } = new Dictionary<int, TwistStatusDto>();
 
-        public Dictionary<ETwist, TwistStatusDto> DcTwistStatusDto
+        public Dictionary<int, TwistStatusDto> DcTwistStatusDto
         {
             get
             {
@@ -92,8 +91,8 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data
     {
         public async Task<bool> UpsertTwistTable()
         {
-            Dictionary<ETwist, TwistingMachineTable> _dcTwistInQueue = ITwistTableLibrary.ListTwistInQueue
-                                                                                         .ToDictionary(x => x.Machine);
+            Dictionary<int, TwistingMachineTable> _dcTwistInQueue = ITwistTableLibrary.ListTwistInQueue
+                                                                                         .ToDictionary(x => x.MachineNumber);
 
             foreach (var pair in DcTwistStatusDto)
             {
@@ -119,8 +118,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data
 
         bool _isStatusChanged(TwistStatusDto dto, TwistingMachineTable table)
         {
-            bool isChange = dto.machineNumber != table.MachineNumber
-                            || dto.processState != table.ProcessState
+            bool isChange = dto.processState != table.ProcessState
                             || dto.machineStatus != table.MachineStatus
                             || dto.missionStartedInform != table.MissionStartedInform
                             || dto.missionCompletedInform != table.MissionCompletedInform
@@ -134,8 +132,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data
             return new TwistingMachineTable
             {
                 Id = table.Id,
-                Machine = table.Machine,
-                MachineNumber = dto.machineNumber,
+                MachineNumber = table.MachineNumber,
                 ProcessState = dto.processState,
                 MachineStatus = dto.machineStatus,
                 MissionStartedInform = dto.missionStartedInform,

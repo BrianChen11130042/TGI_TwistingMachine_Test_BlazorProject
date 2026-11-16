@@ -1,4 +1,4 @@
-﻿namespace TGI_TwistingMachine_Test_BlazorProject.EquipName.TwistingMachine
+﻿namespace TGI_TwistingMachine_Test_BlazorProject.EFModel.ParamType
 {
     public enum ESilkStatus
     {

@@ -1,7 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TGI_TwistingMachine_Test_BlazorProject.DtoModel;
 using TGI_TwistingMachine_Test_BlazorProject.EFModel;
-using TGI_TwistingMachine_Test_BlazorProject.EquipName.TwistingMachine;
 
 namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.DbTable.TwistingMachine
 {
@@ -42,7 +40,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.DbTable.Twisting
                     List<TwistingMachineTable> list = await context.TwistingMachineTables.Include(x => x.CakeTables)
                                                                                          .Include(x => x.BobbinTables)
                                                                                          .AsNoTracking()
-                                                                                         .OrderBy(x => x.Machine)
+                                                                                         .OrderBy(x => x.MachineNumber)
                                                                                          .ToListAsync();
 
                     ListTwistInQueue.Clear();
@@ -65,7 +63,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.DbTable.Twisting
                 {
                     TwistDbContext context = scope.ServiceProvider.GetRequiredService<TwistDbContext>();
 
-                    TwistingMachineTable target = await context.TwistingMachineTables.FirstOrDefaultAsync(x => x.Machine == data.Machine);
+                    TwistingMachineTable target = await context.TwistingMachineTables.FirstOrDefaultAsync(x => x.MachineNumber == data.MachineNumber);
 
                     if(target != null)
                     {
@@ -91,7 +89,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.DbTable.Twisting
 
         public void UpsertTwistTableInQueue(TwistingMachineTable data)
         {
-            var target = ListTwistInQueue.FirstOrDefault(x => x.Machine == data.Machine);
+            var target = ListTwistInQueue.FirstOrDefault(x => x.MachineNumber == data.MachineNumber);
 
             if(target != null)
             {
