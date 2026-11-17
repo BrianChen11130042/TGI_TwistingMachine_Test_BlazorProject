@@ -1,13 +1,9 @@
 ﻿using TGI_TwistingMachine_Test_BlazorProject.DtoModel;
 
-namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data
+namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data.TwistRegular
 {
-    public interface ITwistDataLibrary
+    public interface ITwistRegularDataLibrary
     {
-        Dictionary<int, ushort> DcTwistMissionCmd { get; set; }
-
-        Dictionary<int, ushort> DcTwistAutoCmd { get; set; }
-
         Dictionary<int, TwistStatusDto> DcTwistStatusDto { get; set; }
 
         Task<bool> UpsertTwistTable();

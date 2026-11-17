@@ -1,7 +1,7 @@
 ﻿using CommonRazorLibraryB.Library.TGITwistingMachine.Adapter;
 using CommonRazorLibraryB.Library.TGITwistingMachine.Package;
 using TGI_TwistingMachine_Test_BlazorProject.DtoModel;
-using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data;
+using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data.TwistRegular;
 
 namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistRegular
 {
@@ -12,12 +12,12 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistRegular
         readonly ITgiTwistPackage<ETwist> ITwistPack;
         readonly ITgiTwistAdapter<ETwist> ITwistOp;
 
-        readonly ITwistDataLibrary IDataLib;
+        readonly ITwistRegularDataLibrary IDataLib;
 
         public TwistRegularTaskPack(List<ETwist> listTwist,
                                     ITgiTwistPackage<ETwist> ITwistPack,
                                     ITgiTwistAdapter<ETwist> ITwistOp,
-                                    ITwistDataLibrary IDataLib)
+                                    ITwistRegularDataLibrary IDataLib)
         {
             this.listTwist = listTwist;
 

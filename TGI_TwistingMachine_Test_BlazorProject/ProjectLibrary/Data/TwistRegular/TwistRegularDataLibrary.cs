@@ -1,32 +1,29 @@
 ﻿using CommonRazorLibraryB.Tools.NLogWritter;
 using TGI_TwistingMachine_Test_BlazorProject.DtoModel;
 using TGI_TwistingMachine_Test_BlazorProject.EFModel;
+using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data.TwistRegular;
 using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.DbTable.MissionLogs;
 using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.DbTable.TwistingMachine;
 using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Observer.Interface;
 
 namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data
 {
-    public partial class TwistDataLibrary
+    public partial class TwistRegularDataLibrary
     {
         readonly ILogsTableLibrary ILogTableLibrary;
-
         readonly ITwistTableLibrary ITwistTableLibrary;
 
-        readonly ISystemObserverable ISysObser;
         readonly ITwistInformObserverable ITwistInformObser;
         readonly INLogObservable INLogObser;
 
-        public TwistDataLibrary(ILogsTableLibrary ILogTableLibrary,
+        public TwistRegularDataLibrary(ILogsTableLibrary ILogTableLibrary,
                                 ITwistTableLibrary ITwistTableLibrary,
-                                ISystemObserverable ISysObser,
                                 ITwistInformObserverable ITwistInformObser,
                                 INLogObservable INLogObser)
         {
             this.ILogTableLibrary = ILogTableLibrary;
             this.ITwistTableLibrary = ITwistTableLibrary;
 
-            this.ISysObser = ISysObser;
             this.ITwistInformObser = ITwistInformObser;
             this.INLogObser = INLogObser;
         }
@@ -42,36 +39,8 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data
         }
     }
 
-    public partial class TwistDataLibrary : ITwistDataLibrary
+    public partial class TwistRegularDataLibrary : ITwistRegularDataLibrary
     {
-        Dictionary<int, ushort> _dcTwistMissionCmd { get; set; } = new Dictionary<int, ushort>();
-
-        public Dictionary<int, ushort> DcTwistMissionCmd
-        {
-            get
-            {
-                return _dcTwistMissionCmd;
-            }
-            set
-            {
-                _dcTwistMissionCmd = value;
-            }
-        }
-
-        Dictionary<int, ushort> _dcTwistAutoCmd { get; set; } = new Dictionary<int, ushort>();
-
-        public Dictionary<int, ushort> DcTwistAutoCmd
-        {
-            get
-            {
-                return _dcTwistAutoCmd;
-            }
-            set
-            {
-                _dcTwistAutoCmd = value;
-            }
-        }
-
         Dictionary<int, TwistStatusDto> _dcTwistStatusDto { get; set; } = new Dictionary<int, TwistStatusDto>();
 
         public Dictionary<int, TwistStatusDto> DcTwistStatusDto
@@ -87,7 +56,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data
         }
     }
 
-    public partial class TwistDataLibrary
+    public partial class TwistRegularDataLibrary
     {
         public async Task<bool> UpsertTwistTable()
         {
@@ -144,7 +113,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data
         }
     }
 
-    public partial class TwistDataLibrary
+    public partial class TwistRegularDataLibrary
     {
         public async Task NotifyTwistUpdate()
         {
