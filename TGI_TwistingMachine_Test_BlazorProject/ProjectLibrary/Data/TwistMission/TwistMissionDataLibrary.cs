@@ -125,4 +125,54 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data.TwistMissio
             }
         }
     }
+
+    public partial class TwistMissionDataLibrary
+    {
+        string _Log { get; set; } = string.Empty;
+
+        public async Task<bool> AddLogTable(string equip, string type, string log)
+        {
+            if (_Log == log)
+                return true;
+
+            var result = await ILogTableLibrary.AddLogData(_getLogTable(equip, type, log));
+
+            if(result.status)
+            {
+                _Log = log;
+                return result.status;
+            }
+            else
+            {
+                await _writeNLogError(result.msg);
+                return result.status;
+            }
+        }
+
+        LogTable _getLogTable(string equip, string logType, string msg)
+        {
+            LogTable table = new LogTable()
+            {
+                LogType = logType,
+                Equipment = equip,
+                Msg = msg,
+                RecordTime = DateTime.Now,
+            };
+
+            return table;
+        }
+    }
+
+    public partial class TwistMissionDataLibrary
+    {
+        public async Task WriteNLogError(string log)
+        {
+            await _writeNLogError(log);
+        }
+
+        public async Task WriteNLogInform(string log)
+        {
+            await _writeNLogInform(log);
+        }
+    }
 }

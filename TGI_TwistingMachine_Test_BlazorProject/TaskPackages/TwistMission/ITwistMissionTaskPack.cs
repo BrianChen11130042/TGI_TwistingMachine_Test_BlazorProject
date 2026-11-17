@@ -19,5 +19,9 @@
         bool IsAmrUnloadEmptyCake();
 
         bool IsPersonnelClean();
+
+        Task<bool> SetAutoModeSwitch();
+
+        Task<bool> SetLogAutoModeSwitch();
     }
 }

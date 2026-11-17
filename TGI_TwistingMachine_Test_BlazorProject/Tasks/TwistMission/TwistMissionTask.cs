@@ -57,6 +57,16 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
         {
             return pack.IsPersonnelClean();
         }
+
+        public Task<bool> SetAutoModeSwitch()
+        {
+            return pack.SetAutoModeSwitch();
+        }
+
+        public Task<bool> SetLogAutoModeSwitch()
+        {
+            return pack.SetLogAutoModeSwitch();
+        }
     }
 
     public enum ETwistMission
@@ -87,46 +97,75 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
                     break;
 
                 case ETwistMission.CheckMission:
+                    switch(S3)
+                    {
+                        case 0:
+                            await GetMachineNumber();
 
-                    await GetMachineNumber();
+                            if (!IsGetTwistTableInQueue())
+                            {
+                                Set(ETwistMission.CheckMission, 0);
+                                break;
+                            }
 
-                    if(!IsGetTwistTableInQueue())
-                    {
-                        Set(ETwistMission.CheckMission, 0);
-                        break;
+                            if (IsAutoModeSwitch())
+                            {
+                                Set(ETwistMission.AutoModeSwitch, 0);
+                            }
+                            else if (IsAmrLoadSilkCake())
+                            {
+                                Set(ETwistMission.AmrLoadSilkCake, 0);
+                            }
+                            else if (IsPersonnelLoadEmptyBobbin())
+                            {
+                                Set(ETwistMission.PersonnelLoadEmptyBobbin, 0);
+                            }
+                            else if (IsPersonnelCutAndCollect())
+                            {
+                                Set(ETwistMission.PersonnelCutAndCollect, 0);
+                            }
+                            else if (IsAmrUnloadSilkBobbin())
+                            {
+                                Set(ETwistMission.AmrUnloadSilkBobbin, 0);
+                            }
+                            else if (IsAmrUnloadEmptyCake())
+                            {
+                                Set(ETwistMission.AmrUnloadEmptyCake, 0);
+                            }
+                            else if (IsPersonnelClean())
+                            {
+                                Set(ETwistMission.PersonnelClean, 0);
+                            }
+                            else
+                            {
+                                Set(ETwistMission.CheckMission, 0);
+                            }
+                            break;
                     }
+                    break;
 
-                    if (IsAutoModeSwitch())
+                case ETwistMission.AutoModeSwitch:
+                    switch(S3)
                     {
-                        Set(ETwistMission.AutoModeSwitch, 0);
-                    }
-                    else if(IsAmrLoadSilkCake())
-                    {
-                        Set(ETwistMission.AmrLoadSilkCake, 0);
-                    }
-                    else if(IsPersonnelLoadEmptyBobbin())
-                    {
-                        Set(ETwistMission.PersonnelLoadEmptyBobbin, 0);
-                    }
-                    else if(IsPersonnelCutAndCollect())
-                    {
-                        Set(ETwistMission.PersonnelCutAndCollect, 0);
-                    }
-                    else if(IsAmrUnloadSilkBobbin())
-                    {
-                        Set(ETwistMission.AmrUnloadSilkBobbin, 0);
-                    }
-                    else if(IsAmrUnloadEmptyCake())
-                    {
-                        Set(ETwistMission.AmrUnloadEmptyCake, 0);
-                    }
-                    else if(IsPersonnelClean())
-                    {
-                        Set(ETwistMission.PersonnelClean, 0);
-                    }
-                    else
-                    {
-                        Set(ETwistMission.CheckMission, 0);
+                        case 0:
+                            if(await SetAutoModeSwitch())
+                            {
+                                if(await SetLogAutoModeSwitch())
+                                {
+                                    Set(ETwistMission.CheckMission, 0);
+                                }
+                                else
+                                {
+                                    SaveState();
+                                    Set(ES1.Error, ETwistMission.None, 0);
+                                }
+                            }
+                            else
+                            {
+                                SaveState();
+                                Set(ES1.Error, ETwistMission.None, 0);
+                            }
+                            break;
                     }
                     break;
             }

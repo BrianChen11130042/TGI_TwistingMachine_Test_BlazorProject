@@ -22,8 +22,17 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data.TwistMissio
         // 64 : 人工完成清設備
         int CmdMissionCompleted { get; set; } 
 
+        //Twist Table
         TwistingMachineTable TwistTable { get; set; }
 
         bool GetTwistTableInQueue();
+
+        //Log Table
+        Task<bool> AddLogTable(string equip, string type, string log);
+
+        //NLog
+        Task WriteNLogError(string log);
+
+        Task WriteNLogInform(string log);
     }
 }
