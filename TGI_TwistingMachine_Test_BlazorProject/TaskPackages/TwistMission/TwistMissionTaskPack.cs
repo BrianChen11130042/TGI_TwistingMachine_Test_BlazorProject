@@ -321,6 +321,67 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
 
     public partial class TwistMissionTaskPack<ETwist>
     {
+        public async Task<bool> AddLogPersonnelCutAndCollectStart()
+        {
+            string temp = $"PersonnelCutAndCollect {personnelCutAndCollect} Start";
+
+            return await IDataLib.AddLogTable(twist.ToString(), info, temp);
+        }
+
+        public async Task<bool> TransferSilkFromCakeToBobbinTable()
+        {
+            //cake table 絲綢資料轉移到 bobbin table, cake所有port更改為無絲cake狀態,bobbin所有port更改為有絲bobbin狀態, 然後寫入資料庫和InQueue
+
+            return true;
+        }
+
+        public bool IsPersonnelCutAndCollectFinish()
+        {
+            if (IDataLib.CmdMissionCompleted == personnelCutAndCollect)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> SetPersonnelCutAndCollectComplete()
+        {
+            await ITwistPack.Packages[twist].gate.WaitAsync();
+
+            try
+            {
+                ITwistPack.Packages[twist].property.set.taskCompletion = personnelCutAndCollect;
+
+                if (await ITwistOp.SetTaskCompletion(twist))
+                {
+                    return true;
+                }
+                else
+                {
+                    string nlog = ITwistPack.Packages[twist].errorLog;
+                    await IDataLib.WriteNLogError(nlog);
+                    return false;
+                }
+            }
+            finally
+            {
+                ITwistPack.Packages[twist].gate.Release();
+            }
+        }
+
+        public async Task<bool> AddLogPersonnelCutAndCollectFinish()
+        {
+            string temp = $"PersonnelCutAndCollect {personnelCutAndCollect} Finish";
+
+            return await IDataLib.AddLogTable(twist.ToString(), info, temp);
+        }
+    }
+
+    public partial class TwistMissionTaskPack<ETwist>
+    {
         public void ResetCmdAutoMode()
         {
             IDataLib.CmdAutoMode = 99;

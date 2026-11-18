@@ -132,6 +132,31 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
         {
             return pack.AddLogPersonnelLoadNoSilkBobbinFinish();
         }
+
+        public Task<bool> AddLogPersonnelCutAndCollectStart()
+        {
+            return pack.AddLogPersonnelCutAndCollectStart();
+        }
+
+        public Task<bool> TransferSilkFromCakeToBobbinTable()
+        {
+            return pack.TransferSilkFromCakeToBobbinTable();
+        }
+
+        public bool IsPersonnelCutAndCollectFinish()
+        {
+            return pack.IsPersonnelCutAndCollectFinish();
+        }
+
+        public Task<bool> SetPersonnelCutAndCollectComplete()
+        {
+            return pack.SetPersonnelCutAndCollectComplete();
+        }
+
+        public Task<bool> AddLogPersonnelCutAndCollectFinish()
+        {
+            return pack.AddLogPersonnelCutAndCollectFinish();
+        }
     }
 
     public enum ETwistMission
@@ -391,6 +416,78 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
                             else
                             {
                                 Set(30);
+                            }
+                            break;
+                    }
+                    break;
+
+                case ETwistMission.PersonnelCutAndCollect:
+                    switch(S3)
+                    {
+                        case 0:
+                            if(await AddLogPersonnelCutAndCollectStart())
+                            {
+                                if(await TransferSilkFromCakeToBobbinTable())
+                                {
+                                    Set(10);
+                                }
+                                else
+                                {
+                                    SaveState();
+                                    Set(ES1.Error, ETwistMission.None, 0);
+                                }
+                            }
+                            else
+                            {
+                                SaveState();
+                                Set(ES1.Error, ETwistMission.None, 0);
+                            }
+                            break;
+
+                        case 10:
+                            if(IsPersonnelCutAndCollectFinish())
+                            {
+                                if(await SetPersonnelCutAndCollectComplete())
+                                {
+                                    if(await AddLogPersonnelCutAndCollectFinish())
+                                    {
+                                        ResetCmdMissionCompleted();
+
+                                        Set(20);
+                                    }
+                                    else
+                                    {
+                                        SaveState();
+                                        Set(ES1.Error, ETwistMission.None, 0);
+                                    }
+                                }
+                                else
+                                {
+                                    SaveState();
+                                    Set(ES1.Error, ETwistMission.None, 0);
+                                }
+                            }
+                            else
+                            {
+                                Set(10);
+                            }
+                            break;
+
+                        case 20:
+                            if (IsGetTwistTableInQueue())
+                            {
+                                if (!IsPersonnelCutAndCollect())
+                                {
+                                    Set(ETwistMission.CheckMission, 0);
+                                }
+                                else
+                                {
+                                    Set(20);
+                                }
+                            }
+                            else
+                            {
+                                Set(20);
                             }
                             break;
                     }

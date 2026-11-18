@@ -49,6 +49,17 @@
 
         Task<bool> AddLogPersonnelLoadNoSilkBobbinFinish();
 
+        //PersonnelCutAndCollect
+        Task<bool> AddLogPersonnelCutAndCollectStart();
+
+        Task<bool> TransferSilkFromCakeToBobbinTable();
+
+        bool IsPersonnelCutAndCollectFinish();
+
+        Task<bool> SetPersonnelCutAndCollectComplete();
+
+        Task<bool> AddLogPersonnelCutAndCollectFinish();
+
         //Common
         void ResetCmdAutoMode();
 
