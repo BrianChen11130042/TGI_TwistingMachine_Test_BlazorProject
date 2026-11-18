@@ -187,13 +187,17 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
 
             if(await IDataLib.AddLogTable(twist.ToString(), info, temp))
             {
-                IDataLib.CmdAutoMode = 99;
                 return true;
             }
             else
             {
                 return false;
             }
+        }
+
+        public void ResetAutoModeSwitch()
+        {
+            IDataLib.CmdAutoMode = 99;
         }
     }
 }

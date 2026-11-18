@@ -20,8 +20,11 @@
 
         bool IsPersonnelClean();
 
+        //Auto Mode Switch
         Task<bool> SetAutoModeSwitch();
 
         Task<bool> SetLogAutoModeSwitch();
+
+        void ResetAutoModeSwitch();
     }
 }

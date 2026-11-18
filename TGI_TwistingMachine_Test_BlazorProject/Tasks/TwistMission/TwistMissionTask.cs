@@ -67,6 +67,11 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
         {
             return pack.SetLogAutoModeSwitch();
         }
+
+        public void ResetAutoModeSwitch()
+        {
+            pack.ResetAutoModeSwitch();
+        }
     }
 
     public enum ETwistMission
@@ -152,6 +157,8 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
                             {
                                 if(await SetLogAutoModeSwitch())
                                 {
+                                    ResetAutoModeSwitch();
+
                                     Set(ETwistMission.CheckMission, 0);
                                 }
                                 else
