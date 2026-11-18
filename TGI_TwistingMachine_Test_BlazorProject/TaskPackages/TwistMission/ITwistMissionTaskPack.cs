@@ -10,13 +10,13 @@
 
         bool IsAmrLoadSilkCake();
 
-        bool IsPersonnelLoadEmptyBobbin();
+        bool IsPersonnelLoadNoSilkBobbin();
 
         bool IsPersonnelCutAndCollect();
 
         bool IsAmrUnloadSilkBobbin();
 
-        bool IsAmrUnloadEmptyCake();
+        bool IsAmrUnloadNoSilkCake();
 
         bool IsPersonnelClean();
 
@@ -38,6 +38,16 @@
 
         Task<bool> AddLogAmrLoadSilkCakeFinish();
 
+        //PersonnelLoadNoSilkBobbin
+        Task<bool> AddLogPersonnelLoadNoSilkBobbinStart();
+
+        bool IsPersonnelLoadNoSilkBobbinFinish();
+
+        Task<bool> SetBobbinTableNoSilkBobbin();
+
+        Task<bool> SetPersonnelLoadNoSilkBobbinComplete();
+
+        Task<bool> AddLogPersonnelLoadNoSilkBobbinFinish();
 
         //Common
         void ResetCmdAutoMode();

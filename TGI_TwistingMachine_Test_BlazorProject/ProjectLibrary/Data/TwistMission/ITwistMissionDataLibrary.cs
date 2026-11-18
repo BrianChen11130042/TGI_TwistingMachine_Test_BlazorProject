@@ -13,12 +13,12 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data.TwistMissio
         int CmdAutoMode { get; set; }
 
         // 0 : 復歸 
-        // 1 : AMR完成Silk Cake放置 
-        // 2 : 人工完成上Empty Bobbin 
+        // 1 : AMR完成上Silk Cake
+        // 2 : 人工完成上NoSilk Bobbin 
         // 4 : 撚紗完成 
         // 8 : 人工完成剪線收線 
         // 16 : Amr完成下Silk Bobbin
-        // 32 : Amr完成下Empty Cake 
+        // 32 : Amr完成下NoSilk Cake 
         // 64 : 人工完成清設備
         int CmdMissionCompleted { get; set; } 
 

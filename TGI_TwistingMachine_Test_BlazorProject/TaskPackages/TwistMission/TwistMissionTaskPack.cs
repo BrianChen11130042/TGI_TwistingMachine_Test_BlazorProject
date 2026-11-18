@@ -31,11 +31,11 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
         const string err = "Error";
 
         const int amrLoadSilkCake = 1 << 0;           // 1,   Bit 0 通知/完成AMR上Silk Cake
-        const int personnelLoadEmptyBobbin = 1 << 1;  // 2,   Bit 1 通知/完成人工Empty Bobbin與繞線
+        const int personnelLoadNoSilkBobbin = 1 << 1; // 2,   Bit 1 通知/完成人工上NoSilk Bobbin與繞線
         const int twisting = 1 << 2;                  // 4,   Bit 2 通知/完成撚紗
         const int personnelCutAndCollect = 1 << 3;    // 8,   Bit 3 通知/完成人工剪線收線
         const int amrUnloadSilkBobbin = 1 << 4;       // 16,  Bit 4 通知/完成AMR下Silk Bobbin
-        const int amrUnloadEmptyCake = 1 << 5;        // 32,  Bit 5 通知/完成AMR下Empty Cake
+        const int amrUnloadNoSilkCake = 1 << 5;       // 32,  Bit 5 通知/完成AMR下NoSilk Cake
         const int personnelCleanMachine = 1 << 6;     // 64,  Bit 6 通知/完成人工清設備
     }
 
@@ -93,9 +93,9 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
             }
         }
 
-        public bool IsPersonnelLoadEmptyBobbin()
+        public bool IsPersonnelLoadNoSilkBobbin()
         {
-            if(IDataLib.TwistTable.MissionStartedInform == personnelLoadEmptyBobbin)
+            if(IDataLib.TwistTable.MissionStartedInform == personnelLoadNoSilkBobbin)
             {
                 return true;
             }
@@ -129,9 +129,9 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
             }
         }
 
-        public bool IsAmrUnloadEmptyCake()
+        public bool IsAmrUnloadNoSilkCake()
         {
-            if(IDataLib.TwistTable.MissionStartedInform == amrUnloadEmptyCake)
+            if(IDataLib.TwistTable.MissionStartedInform == amrUnloadNoSilkCake)
             {
                 return true;
             }
@@ -253,6 +253,67 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
         public async Task<bool> AddLogAmrLoadSilkCakeFinish()
         {
             string temp = $"AmrLoadSilkCake {amrLoadSilkCake} Finish";
+
+            return await IDataLib.AddLogTable(twist.ToString(), info, temp);
+        }
+    }
+
+    public partial class TwistMissionTaskPack<ETwist>
+    {
+        public async Task<bool> AddLogPersonnelLoadNoSilkBobbinStart()
+        {
+            string temp = $"PersonnelLoadNoSilkBobbin {personnelLoadNoSilkBobbin} Start";
+
+            return await IDataLib.AddLogTable(twist.ToString(), info, temp);
+        }
+
+        public bool IsPersonnelLoadNoSilkBobbinFinish()
+        {
+            if (IDataLib.CmdMissionCompleted == personnelLoadNoSilkBobbin)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> SetBobbinTableNoSilkBobbin()
+        {
+            //在bobbin table 所有port更改為無絲bobbin狀態 然後寫入資料庫和InQueue
+
+            return true;
+        }
+
+        public async Task<bool> SetPersonnelLoadNoSilkBobbinComplete()
+        {
+            await ITwistPack.Packages[twist].gate.WaitAsync();
+
+            try
+            {
+                ITwistPack.Packages[twist].property.set.taskCompletion = personnelLoadNoSilkBobbin;
+
+                if (await ITwistOp.SetTaskCompletion(twist))
+                {
+                    return true;
+                }
+                else
+                {
+                    string nlog = ITwistPack.Packages[twist].errorLog;
+                    await IDataLib.WriteNLogError(nlog);
+                    return false;
+                }
+            }
+            finally
+            {
+                ITwistPack.Packages[twist].gate.Release();
+            }
+        }
+
+        public async Task<bool> AddLogPersonnelLoadNoSilkBobbinFinish()
+        {
+            string temp = $"PersonnelLoadNoSilkBobbin {personnelLoadNoSilkBobbin} Finish";
 
             return await IDataLib.AddLogTable(twist.ToString(), info, temp);
         }

@@ -33,9 +33,9 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
             return pack.IsAmrLoadSilkCake();
         }
 
-        public bool IsPersonnelLoadEmptyBobbin()
+        public bool IsPersonnelLoadNoSilkBobbin()
         {
-            return pack.IsPersonnelLoadEmptyBobbin();
+            return pack.IsPersonnelLoadNoSilkBobbin();
         }
 
         public bool IsPersonnelCutAndCollect()
@@ -48,9 +48,9 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
             return pack.IsAmrUnloadSilkBobbin();
         }
 
-        public bool IsAmrUnloadEmptyCake()
+        public bool IsAmrUnloadNoSilkCake()
         {
-            return pack.IsAmrUnloadEmptyCake();
+            return pack.IsAmrUnloadNoSilkCake();
         }
 
         public bool IsPersonnelClean()
@@ -107,6 +107,31 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
         {
             pack.ResetCmdMissionCompleted();
         }
+
+        public Task<bool> AddLogPersonnelLoadNoSilkBobbinStart()
+        {
+            return pack.AddLogPersonnelLoadNoSilkBobbinStart();
+        }
+
+        public bool IsPersonnelLoadNoSilkBobbinFinish()
+        {
+            return pack.IsPersonnelLoadNoSilkBobbinFinish();
+        }
+
+        public Task<bool> SetBobbinTableNoSilkBobbin()
+        {
+            return pack.SetBobbinTableNoSilkBobbin();
+        }
+
+        public Task<bool> SetPersonnelLoadNoSilkBobbinComplete()
+        {
+            return pack.SetPersonnelLoadNoSilkBobbinComplete();
+        }
+
+        public Task<bool> AddLogPersonnelLoadNoSilkBobbinFinish()
+        {
+            return pack.AddLogPersonnelLoadNoSilkBobbinFinish();
+        }
     }
 
     public enum ETwistMission
@@ -117,10 +142,10 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
         AutoModeSwitch,
 
         AmrLoadSilkCake,
-        PersonnelLoadEmptyBobbin,
+        PersonnelLoadNoSilkBobbin,
         PersonnelCutAndCollect,
         AmrUnloadSilkBobbin,
-        AmrUnloadEmptyCake,
+        AmrUnloadNoSilkCake,
         PersonnelClean
     }
 
@@ -156,9 +181,9 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
                             {
                                 Set(ETwistMission.AmrLoadSilkCake, 0);
                             }
-                            else if (IsPersonnelLoadEmptyBobbin())
+                            else if (IsPersonnelLoadNoSilkBobbin())
                             {
-                                Set(ETwistMission.PersonnelLoadEmptyBobbin, 0);
+                                Set(ETwistMission.PersonnelLoadNoSilkBobbin, 0);
                             }
                             else if (IsPersonnelCutAndCollect())
                             {
@@ -168,9 +193,9 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
                             {
                                 Set(ETwistMission.AmrUnloadSilkBobbin, 0);
                             }
-                            else if (IsAmrUnloadEmptyCake())
+                            else if (IsAmrUnloadNoSilkCake())
                             {
-                                Set(ETwistMission.AmrUnloadEmptyCake, 0);
+                                Set(ETwistMission.AmrUnloadNoSilkCake, 0);
                             }
                             else if (IsPersonnelClean())
                             {
@@ -279,6 +304,82 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
                             if(IsGetTwistTableInQueue())
                             {
                                 if(!IsAmrLoadSilkCake())
+                                {
+                                    Set(ETwistMission.CheckMission, 0);
+                                }
+                                else
+                                {
+                                    Set(30);
+                                }
+                            }
+                            else
+                            {
+                                Set(30);
+                            }
+                            break;
+                    }
+                    break;
+
+                case ETwistMission.PersonnelLoadNoSilkBobbin:
+                    switch(S3)
+                    {
+                        case 0:
+                            if(await AddLogPersonnelLoadNoSilkBobbinStart())
+                            {
+                                Set(10);
+                            }
+                            else
+                            {
+                                SaveState();
+                                Set(ES1.Error, ETwistMission.None, 0);
+                            }
+                            break;
+
+                        case 10:
+                            if(IsPersonnelLoadNoSilkBobbinFinish())
+                            {
+                                if(await SetBobbinTableNoSilkBobbin())
+                                {
+                                    Set(20);
+                                }
+                                else
+                                {
+                                    SaveState();
+                                    Set(ES1.Error, ETwistMission.None, 0);
+                                }
+                            }
+                            else
+                            {
+                                Set(10);
+                            }
+                            break;
+
+                        case 20:
+                            if(await SetPersonnelLoadNoSilkBobbinComplete())
+                            {
+                                if(await AddLogPersonnelLoadNoSilkBobbinFinish())
+                                {
+                                    ResetCmdMissionCompleted();
+
+                                    Set(30);
+                                }
+                                else
+                                {
+                                    SaveState();
+                                    Set(ES1.Error, ETwistMission.None, 0);
+                                }
+                            }
+                            else
+                            {
+                                SaveState();
+                                Set(ES1.Error, ETwistMission.None, 0);
+                            }
+                            break;
+
+                        case 30:
+                            if (IsGetTwistTableInQueue())
+                            {
+                                if (!IsPersonnelLoadNoSilkBobbin())
                                 {
                                     Set(ETwistMission.CheckMission, 0);
                                 }
