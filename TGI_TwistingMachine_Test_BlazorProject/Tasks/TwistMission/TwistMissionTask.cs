@@ -63,14 +63,49 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
             return pack.SetAutoModeSwitch();
         }
 
-        public Task<bool> SetLogAutoModeSwitch()
+        public Task<bool> AddLogAutoModeSwitch()
         {
-            return pack.SetLogAutoModeSwitch();
+            return pack.AddLogAutoModeSwitch();
         }
 
-        public void ResetAutoModeSwitch()
+        public void ResetCmdAutoMode()
         {
-            pack.ResetAutoModeSwitch();
+            pack.ResetCmdAutoMode();
+        }
+
+        public Task<bool> AddAmrLoadSilkCakeAssignTable()
+        {
+            return pack.AddAmrLoadSilkCakeAssignTable();
+        }
+
+        public Task<bool> AddLogAmrLoadSilkCakeStart()
+        {
+            return pack.AddLogAmrLoadSilkCakeStart();
+        }
+
+        public Task<bool> MonitorAmrLoadSilkCakeAssignTable()
+        {
+            return pack.MonitorAmrLoadSilkCakeAssignTable();
+        }
+
+        public bool IsAmrLoadSilkCakeAssignTableFinish()
+        {
+            return pack.IsAmrLoadSilkCakeAssignTableFinish();
+        }
+
+        public Task<bool> SetAmrLoadSilkCakeComplete()
+        {
+            return pack.SetAmrLoadSilkCakeComplete();
+        }
+
+        public Task<bool> AddLogAmrLoadSilkCakeFinish()
+        {
+            return pack.AddLogAmrLoadSilkCakeFinish();
+        }
+
+        public void ResetCmdMissionCompleted()
+        {
+            pack.ResetCmdMissionCompleted();
         }
     }
 
@@ -155,9 +190,9 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
                         case 0:
                             if(await SetAutoModeSwitch())
                             {
-                                if(await SetLogAutoModeSwitch())
+                                if(await AddLogAutoModeSwitch())
                                 {
-                                    ResetAutoModeSwitch();
+                                    ResetCmdAutoMode();
 
                                     Set(ETwistMission.CheckMission, 0);
                                 }
@@ -171,6 +206,90 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
                             {
                                 SaveState();
                                 Set(ES1.Error, ETwistMission.None, 0);
+                            }
+                            break;
+                    }
+                    break;
+
+                case ETwistMission.AmrLoadSilkCake:
+                    switch(S3)
+                    {
+                        case 0:
+                            if(await AddAmrLoadSilkCakeAssignTable())
+                            {
+                                if(await AddLogAmrLoadSilkCakeStart())
+                                {
+                                    Set(10);
+                                }
+                                else
+                                {
+                                    SaveState();
+                                    Set(ES1.Error, ETwistMission.None, 0);
+                                }
+                            }
+                            else
+                            {
+                                SaveState();
+                                Set(ES1.Error, ETwistMission.None, 0);
+                            }
+                            break;
+
+                        case 10:
+                            if(await MonitorAmrLoadSilkCakeAssignTable())
+                            {
+                                if(IsAmrLoadSilkCakeAssignTableFinish())
+                                {
+                                    Set(20);
+                                }
+                                else
+                                {
+                                    Set(10);
+                                }
+                            }
+                            else
+                            {
+                                SaveState();
+                                Set(ES1.Error, ETwistMission.None, 0);
+                            }
+                            break;
+
+                        case 20:
+                            if(await SetAmrLoadSilkCakeComplete())
+                            {
+                                if (await AddLogAmrLoadSilkCakeFinish())
+                                {
+                                    ResetCmdMissionCompleted();
+
+                                    Set(30);
+                                }
+                                else
+                                {
+                                    SaveState();
+                                    Set(ES1.Error, ETwistMission.None, 0);
+                                }
+                            }
+                            else
+                            {
+                                SaveState();
+                                Set(ES1.Error, ETwistMission.None, 0);
+                            }
+                            break;
+
+                        case 30:
+                            if(IsGetTwistTableInQueue())
+                            {
+                                if(!IsAmrLoadSilkCake())
+                                {
+                                    Set(ETwistMission.CheckMission, 0);
+                                }
+                                else
+                                {
+                                    Set(30);
+                                }
+                            }
+                            else
+                            {
+                                Set(30);
                             }
                             break;
                     }

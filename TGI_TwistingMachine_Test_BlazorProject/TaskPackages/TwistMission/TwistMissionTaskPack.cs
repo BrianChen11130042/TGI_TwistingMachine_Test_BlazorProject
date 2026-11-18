@@ -30,13 +30,13 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
         const string info = "Inform";
         const string err = "Error";
 
-        const int AmrLoadSilkCake = 1 << 0;           // 1,   Bit 0 通知AMR上Silk Cake
-        const int PersonnelLoadEmptyBobbin = 1 << 1;  // 2,   Bit 1 通知人工Empty Bobbin與繞線
-        const int StartTwisting = 1 << 2;             // 4,   Bit 2 開始撚紗
-        const int PersonnelCutAndCollect = 1 << 3;    // 8,   Bit 3 通知人工剪線收線
-        const int AmrUnloadSilkBobbin = 1 << 4;       // 16,  Bit 4 通知AMR下Silk Bobbin
-        const int AmrUnloadEmptyCake = 1 << 5;        // 32,  Bit 5 通知AMR下Empty Cake
-        const int PersonnelCleanMachine = 1 << 6;     // 64,  Bit 6 通知人工清設備
+        const int amrLoadSilkCake = 1 << 0;           // 1,   Bit 0 通知/完成AMR上Silk Cake
+        const int personnelLoadEmptyBobbin = 1 << 1;  // 2,   Bit 1 通知/完成人工Empty Bobbin與繞線
+        const int twisting = 1 << 2;                  // 4,   Bit 2 通知/完成撚紗
+        const int personnelCutAndCollect = 1 << 3;    // 8,   Bit 3 通知/完成人工剪線收線
+        const int amrUnloadSilkBobbin = 1 << 4;       // 16,  Bit 4 通知/完成AMR下Silk Bobbin
+        const int amrUnloadEmptyCake = 1 << 5;        // 32,  Bit 5 通知/完成AMR下Empty Cake
+        const int personnelCleanMachine = 1 << 6;     // 64,  Bit 6 通知/完成人工清設備
     }
 
     public partial class TwistMissionTaskPack<ETwist> : ITwistMissionTaskPack
@@ -83,7 +83,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
 
         public bool IsAmrLoadSilkCake()
         {
-            if(IDataLib.TwistTable.MissionStartedInform == AmrLoadSilkCake)
+            if(IDataLib.TwistTable.MissionStartedInform == amrLoadSilkCake)
             {
                 return true;
             }
@@ -95,7 +95,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
 
         public bool IsPersonnelLoadEmptyBobbin()
         {
-            if(IDataLib.TwistTable.MissionStartedInform == PersonnelLoadEmptyBobbin)
+            if(IDataLib.TwistTable.MissionStartedInform == personnelLoadEmptyBobbin)
             {
                 return true;
             }
@@ -107,7 +107,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
 
         public bool IsPersonnelCutAndCollect()
         {
-            if(IDataLib.TwistTable.MissionStartedInform == PersonnelCutAndCollect)
+            if(IDataLib.TwistTable.MissionStartedInform == personnelCutAndCollect)
             {
                 return true;
             }
@@ -119,7 +119,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
 
         public bool IsAmrUnloadSilkBobbin()
         {
-            if(IDataLib.TwistTable.MissionStartedInform == AmrUnloadSilkBobbin)
+            if(IDataLib.TwistTable.MissionStartedInform == amrUnloadSilkBobbin)
             {
                 return true;
             }
@@ -131,7 +131,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
 
         public bool IsAmrUnloadEmptyCake()
         {
-            if(IDataLib.TwistTable.MissionStartedInform == AmrUnloadEmptyCake)
+            if(IDataLib.TwistTable.MissionStartedInform == amrUnloadEmptyCake)
             {
                 return true;
             }
@@ -143,7 +143,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
 
         public bool IsPersonnelClean()
         {
-            if(IDataLib.TwistTable.MissionStartedInform == PersonnelCleanMachine)
+            if(IDataLib.TwistTable.MissionStartedInform == personnelCleanMachine)
             {
                 return true;
             }
@@ -181,11 +181,41 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
             }
         }
 
-        public async Task<bool> SetLogAutoModeSwitch()
+        public async Task<bool> AddLogAutoModeSwitch()
         {
-            string temp = $"Set {IDataLib.CmdAutoMode} Mode Success";
+            string temp = $"Set Auto/Manual Mode {IDataLib.CmdAutoMode} Success";
 
-            if(await IDataLib.AddLogTable(twist.ToString(), info, temp))
+            return await IDataLib.AddLogTable(twist.ToString(), info, temp);
+        }
+    }
+
+    public partial class TwistMissionTaskPack<ETwist>
+    {
+        public async Task<bool> AddAmrLoadSilkCakeAssignTable()
+        {
+            //目前先暫訂這個想法 => 新增AmrLoadSilkCakeAssignTable後由AmrLoadSilkCakeAssignTask負責機台cake port以及車子撮合叫車任務 && cake資料搬運(amr port -> twist cake port)
+
+            return true;
+        }
+
+        public async Task<bool> AddLogAmrLoadSilkCakeStart()
+        {
+            string temp = $"AmrLoadSilkCake {amrLoadSilkCake} Start";
+
+            return await IDataLib.AddLogTable(twist.ToString(), info, temp);
+        }
+
+        public async Task<bool> MonitorAmrLoadSilkCakeAssignTable()
+        {
+            //抓取剛剛新增的AmrLoadSilkCakeAssignTable
+            return true;
+        }
+
+        public bool IsAmrLoadSilkCakeAssignTableFinish()
+        {
+            //看AmrLoadSilkCakeAssignTable是否完成
+
+            if(IDataLib.CmdMissionCompleted == amrLoadSilkCake)
             {
                 return true;
             }
@@ -195,9 +225,49 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
             }
         }
 
-        public void ResetAutoModeSwitch()
+        public async Task<bool> SetAmrLoadSilkCakeComplete()
+        {
+            await ITwistPack.Packages[twist].gate.WaitAsync();
+
+            try
+            {
+                ITwistPack.Packages[twist].property.set.taskCompletion = amrLoadSilkCake;
+
+                if (await ITwistOp.SetTaskCompletion(twist))
+                {
+                    return true;
+                }
+                else
+                {
+                    string nlog = ITwistPack.Packages[twist].errorLog;
+                    await IDataLib.WriteNLogError(nlog);
+                    return false;
+                }
+            }
+            finally
+            {
+                ITwistPack.Packages[twist].gate.Release();
+            }
+        }
+
+        public async Task<bool> AddLogAmrLoadSilkCakeFinish()
+        {
+            string temp = $"AmrLoadSilkCake {amrLoadSilkCake} Finish";
+
+            return await IDataLib.AddLogTable(twist.ToString(), info, temp);
+        }
+    }
+
+    public partial class TwistMissionTaskPack<ETwist>
+    {
+        public void ResetCmdAutoMode()
         {
             IDataLib.CmdAutoMode = 99;
+        }
+
+        public void ResetCmdMissionCompleted()
+        {
+            IDataLib.CmdMissionCompleted = 0;
         }
     }
 }

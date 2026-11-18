@@ -23,8 +23,25 @@
         //Auto Mode Switch
         Task<bool> SetAutoModeSwitch();
 
-        Task<bool> SetLogAutoModeSwitch();
+        Task<bool> AddLogAutoModeSwitch();
 
-        void ResetAutoModeSwitch();
+        //AmrLoadSilkCake
+        Task<bool> AddAmrLoadSilkCakeAssignTable();
+
+        Task<bool> AddLogAmrLoadSilkCakeStart();
+
+        Task<bool> MonitorAmrLoadSilkCakeAssignTable();
+
+        bool IsAmrLoadSilkCakeAssignTableFinish();
+
+        Task<bool> SetAmrLoadSilkCakeComplete();
+
+        Task<bool> AddLogAmrLoadSilkCakeFinish();
+
+
+        //Common
+        void ResetCmdAutoMode();
+
+        void ResetCmdMissionCompleted();
     }
 }
