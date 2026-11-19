@@ -141,7 +141,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
             }
         }
 
-        public bool IsPersonnelClean()
+        public bool IsPersonnelCleanMachine()
         {
             if(IDataLib.TwistTable.MissionStartedInform == personnelCleanMachine)
             {
@@ -513,6 +513,60 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
         public async Task<bool> AddLogAmrUnloadNoSilkCakeFinish()
         {
             string temp = $"AmrUnloadNoSilkCake {amrUnloadNoSilkCake} Finish";
+
+            return await IDataLib.AddLogTable(twist.ToString(), info, temp);
+        }
+    }
+
+    public partial class TwistMissionTaskPack<ETwist>
+    {
+        public async Task<bool> AddLogPersonnelCleanMachineStart()
+        {
+            string temp = $"PersonnelCleanMachine {personnelCleanMachine} Start";
+
+            return await IDataLib.AddLogTable(twist.ToString(), info, temp);
+        }
+
+        public bool IsPersonnelCleanMachineFinish()
+        {
+            if (IDataLib.CmdMissionCompleted == personnelCleanMachine)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> SetPersonnelCleanMachineComplete()
+        {
+            await ITwistPack.Packages[twist].gate.WaitAsync();
+
+            try
+            {
+                ITwistPack.Packages[twist].property.set.taskCompletion = personnelCleanMachine;
+
+                if (await ITwistOp.SetTaskCompletion(twist))
+                {
+                    return true;
+                }
+                else
+                {
+                    string nlog = ITwistPack.Packages[twist].errorLog;
+                    await IDataLib.WriteNLogError(nlog);
+                    return false;
+                }
+            }
+            finally
+            {
+                ITwistPack.Packages[twist].gate.Release();
+            }
+        }
+
+        public async Task<bool> AddLogPersonnelCleanMachineFinish()
+        {
+            string temp = $"PersonnelCleanMachine {personnelCleanMachine} Finish";
 
             return await IDataLib.AddLogTable(twist.ToString(), info, temp);
         }

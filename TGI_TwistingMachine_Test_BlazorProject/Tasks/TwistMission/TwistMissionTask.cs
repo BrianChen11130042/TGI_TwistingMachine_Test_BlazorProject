@@ -55,9 +55,9 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
             return pack.IsAmrUnloadNoSilkCake();
         }
 
-        public bool IsPersonnelClean()
+        public bool IsPersonnelCleanMachine()
         {
-            return pack.IsPersonnelClean();
+            return pack.IsPersonnelCleanMachine();
         }
 
         public Task<bool> SetAutoModeSwitch()
@@ -220,6 +220,26 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
             return pack.AddLogAmrUnloadNoSilkCakeFinish();
         }
 
+        public Task<bool> AddLogPersonnelCleanMachineStart()
+        {
+            return pack.AddLogPersonnelCleanMachineStart();
+        }
+
+        public bool IsPersonnelCleanMachineFinish()
+        {
+            return pack.IsPersonnelCleanMachineFinish();
+        }
+
+        public Task<bool> SetPersonnelCleanMachineComplete()
+        {
+            return pack.SetPersonnelCleanMachineComplete();
+        }
+
+        public Task<bool> AddLogPersonnelCleanMachineFinish()
+        {
+            return pack.AddLogPersonnelCleanMachineFinish();
+        }
+
         #endregion
     }
 
@@ -235,7 +255,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
         PersonnelCutAndCollect,
         AmrUnloadSilkBobbin,
         AmrUnloadNoSilkCake,
-        PersonnelClean
+        PersonnelCleanMachine
     }
 
     public partial class TwistMissionTask : FSMBase<ETwistMission, int>
@@ -286,9 +306,9 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
                             {
                                 Set(ETwistMission.AmrUnloadNoSilkCake, 0);
                             }
-                            else if (IsPersonnelClean())
+                            else if (IsPersonnelCleanMachine())
                             {
-                                Set(ETwistMission.PersonnelClean, 0);
+                                Set(ETwistMission.PersonnelCleanMachine, 0);
                             }
                             else
                             {
@@ -720,6 +740,70 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
                             else
                             {
                                 Set(30);
+                            }
+                            break;
+                    }
+                    break;
+
+                case ETwistMission.PersonnelCleanMachine:
+                    switch(S3)
+                    {
+                        case 0:
+                            if(await AddLogPersonnelCleanMachineStart())
+                            {
+                                Set(10);
+                            }
+                            else
+                            {
+                                SaveState();
+                                Set(ES1.Error, ETwistMission.None, 0);
+                            }
+                            break;
+
+                        case 10:
+                            if(IsPersonnelCleanMachineFinish())
+                            {
+                                if(await SetPersonnelCleanMachineComplete())
+                                {
+                                    if(await AddLogPersonnelCleanMachineFinish())
+                                    {
+                                        ResetCmdMissionCompleted();
+
+                                        Set(20);
+                                    }
+                                    else
+                                    {
+                                        SaveState();
+                                        Set(ES1.Error, ETwistMission.None, 0);
+                                    }
+                                }
+                                else
+                                {
+                                    SaveState();
+                                    Set(ES1.Error, ETwistMission.None, 0);
+                                }
+                            }
+                            else
+                            {
+                                Set(10);
+                            }
+                            break;
+
+                        case 20:
+                            if (IsGetTwistTableInQueue())
+                            {
+                                if (!IsPersonnelCleanMachine())
+                                {
+                                    Set(ETwistMission.CheckMission, 0);
+                                }
+                                else
+                                {
+                                    Set(20);
+                                }
+                            }
+                            else
+                            {
+                                Set(20);
                             }
                             break;
                     }

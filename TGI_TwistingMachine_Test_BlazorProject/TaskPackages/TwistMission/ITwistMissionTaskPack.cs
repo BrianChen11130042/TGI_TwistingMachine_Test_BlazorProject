@@ -18,7 +18,7 @@
 
         bool IsAmrUnloadNoSilkCake();
 
-        bool IsPersonnelClean();
+        bool IsPersonnelCleanMachine();
 
         //Auto Mode Switch
         Task<bool> SetAutoModeSwitch();
@@ -85,6 +85,15 @@
         Task<bool> SetAmrUnloadNoSilkCakeComplete();
 
         Task<bool> AddLogAmrUnloadNoSilkCakeFinish();
+
+        //PersonnelCleanMachine
+        Task<bool> AddLogPersonnelCleanMachineStart();
+
+        bool IsPersonnelCleanMachineFinish();
+
+        Task<bool> SetPersonnelCleanMachineComplete();
+
+        Task<bool> AddLogPersonnelCleanMachineFinish();
 
         //Common
         void ResetCmdAutoMode();
