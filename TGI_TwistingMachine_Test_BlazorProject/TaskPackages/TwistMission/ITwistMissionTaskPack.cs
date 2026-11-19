@@ -73,6 +73,19 @@
 
         Task<bool> AddLogAmrUnloadSilkBobbinFinish();
 
+        //AmrUnloadNoSilkCake
+        Task<bool> AddAmrUnloadNoSilkCakeAssignTable();
+
+        Task<bool> AddLogAmrUnloadNoSilkCakeStart();
+
+        Task<bool> MonitorAmrUnloadNoSilkCakeAssignTable();
+
+        bool IsAmrUnloadNoSilkCakeAssignTableFinish();
+
+        Task<bool> SetAmrUnloadNoSilkCakeComplete();
+
+        Task<bool> AddLogAmrUnloadNoSilkCakeFinish();
+
         //Common
         void ResetCmdAutoMode();
 

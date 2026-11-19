@@ -190,6 +190,36 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
             return pack.AddLogAmrUnloadSilkBobbinFinish();
         }
 
+        public Task<bool> AddAmrUnloadNoSilkCakeAssignTable()
+        {
+            return pack.AddAmrUnloadNoSilkCakeAssignTable();
+        }
+
+        public Task<bool> AddLogAmrUnloadNoSilkCakeStart()
+        {
+            return pack.AddLogAmrUnloadNoSilkCakeStart();
+        }
+
+        public Task<bool> MonitorAmrUnloadNoSilkCakeAssignTable()
+        {
+            return pack.MonitorAmrUnloadNoSilkCakeAssignTable();
+        }
+
+        public bool IsAmrUnloadNoSilkCakeAssignTableFinish()
+        {
+            return pack.IsAmrUnloadNoSilkCakeAssignTableFinish();
+        }
+
+        public Task<bool> SetAmrUnloadNoSilkCakeComplete()
+        {
+            return pack.SetAmrUnloadNoSilkCakeComplete();
+        }
+
+        public Task<bool> AddLogAmrUnloadNoSilkCakeFinish()
+        {
+            return pack.AddLogAmrUnloadNoSilkCakeFinish();
+        }
+
         #endregion
     }
 
@@ -595,6 +625,90 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
                             if (IsGetTwistTableInQueue())
                             {
                                 if (!IsAmrUnloadSilkBobbin())
+                                {
+                                    Set(ETwistMission.CheckMission, 0);
+                                }
+                                else
+                                {
+                                    Set(30);
+                                }
+                            }
+                            else
+                            {
+                                Set(30);
+                            }
+                            break;
+                    }
+                    break;
+
+                case ETwistMission.AmrUnloadNoSilkCake:
+                    switch(S3)
+                    {
+                        case 0:
+                            if(await AddAmrUnloadNoSilkCakeAssignTable())
+                            {
+                                if(await AddLogAmrUnloadNoSilkCakeStart())
+                                {
+                                    Set(10);
+                                }
+                                else
+                                {
+                                    SaveState();
+                                    Set(ES1.Error, ETwistMission.None, 0);
+                                }
+                            }
+                            else
+                            {
+                                SaveState();
+                                Set(ES1.Error, ETwistMission.None, 0);
+                            }
+                            break;
+
+                        case 10:
+                            if(await MonitorAmrUnloadNoSilkCakeAssignTable())
+                            {
+                                if(IsAmrUnloadNoSilkCakeAssignTableFinish())
+                                {
+                                    Set(20);
+                                }
+                                else
+                                {
+                                    Set(10);
+                                }
+                            }
+                            else
+                            {
+                                SaveState();
+                                Set(ES1.Error, ETwistMission.None, 0);
+                            }
+                            break;
+
+                        case 20:
+                            if(await SetAmrUnloadNoSilkCakeComplete())
+                            {
+                                if(await AddLogAmrUnloadNoSilkCakeFinish())
+                                {
+                                    ResetCmdMissionCompleted();
+
+                                    Set(30);
+                                }
+                                else
+                                {
+                                    SaveState();
+                                    Set(ES1.Error, ETwistMission.None, 0);
+                                }
+                            }
+                            else
+                            {
+                                SaveState();
+                                Set(ES1.Error, ETwistMission.None, 0);
+                            }
+                            break;
+
+                        case 30:
+                            if (IsGetTwistTableInQueue())
+                            {
+                                if (!IsAmrUnloadNoSilkCake())
                                 {
                                     Set(ETwistMission.CheckMission, 0);
                                 }
