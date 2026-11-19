@@ -193,7 +193,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
     {
         public async Task<bool> AddAmrLoadSilkCakeAssignTable()
         {
-            //目前先暫訂這個想法 => 新增AmrLoadSilkCakeAssignTable後由AmrLoadSilkCakeAssignTask負責機台cake port以及車子撮合叫車任務 && cake資料搬運(amr port -> twist cake port)
+            //目前先暫訂這個想法 => 新增AmrLoadSilkCakeAssignTable後由AmrLoadSilkCakeAssignTask負責機台cake port以及cake車子撮合叫車任務 && cake資料搬運(cake amr port -> twist cake port)
 
             return true;
         }
@@ -375,6 +375,75 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
         public async Task<bool> AddLogPersonnelCutAndCollectFinish()
         {
             string temp = $"PersonnelCutAndCollect {personnelCutAndCollect} Finish";
+
+            return await IDataLib.AddLogTable(twist.ToString(), info, temp);
+        }
+    }
+
+    public partial class TwistMissionTaskPack<ETwist>
+    {
+        public async Task<bool> AddAmrUnloadSilkBobbinAssignTable()
+        {
+            //目前先暫訂這個想法 => 新增AmrUnloadSilkBobbinAssignTable後由AmrUnloadSilkBobbinAssignTask負責機台bobbin port以及bobbin車子撮合叫車任務 && bobbin資料搬運(twist bobbin port -> bobbin amr port)
+
+            return true;
+        }
+
+        public async Task<bool> AddLogAmrUnloadSilkBobbinStart()
+        {
+            string temp = $"AmrUnloadSilkBobbin {amrUnloadSilkBobbin} Start";
+
+            return await IDataLib.AddLogTable(twist.ToString(), info, temp);
+        }
+
+        public async Task<bool> MonitorAmrUnloadSilkBobbinAssignTable()
+        {
+            //抓取剛剛新增的AmrUnloadSilkBobbinAssignTable
+            return true;
+        }
+
+        public bool IsAmrUnloadSilkBobbinAssignTableFinish()
+        {
+            //看AmrUnloadSilkBobbAssignTable是否完成
+
+            if (IDataLib.CmdMissionCompleted == amrUnloadSilkBobbin)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> SetAmrUnloadSilkBobbinComplete()
+        {
+            await ITwistPack.Packages[twist].gate.WaitAsync();
+
+            try
+            {
+                ITwistPack.Packages[twist].property.set.taskCompletion = amrUnloadSilkBobbin;
+
+                if (await ITwistOp.SetTaskCompletion(twist))
+                {
+                    return true;
+                }
+                else
+                {
+                    string nlog = ITwistPack.Packages[twist].errorLog;
+                    await IDataLib.WriteNLogError(nlog);
+                    return false;
+                }
+            }
+            finally
+            {
+                ITwistPack.Packages[twist].gate.Release();
+            }
+        }
+
+        public async Task<bool> AddLogAmrUnloadSilkBobbinFinish()
+        {
+            string temp = $"AmrUnloadSilkBobbin {amrUnloadSilkBobbin} Finish";
 
             return await IDataLib.AddLogTable(twist.ToString(), info, temp);
         }

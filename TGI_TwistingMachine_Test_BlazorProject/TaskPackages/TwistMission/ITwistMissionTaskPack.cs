@@ -60,6 +60,19 @@
 
         Task<bool> AddLogPersonnelCutAndCollectFinish();
 
+        //AmrUnloadSilkBobbin
+        Task<bool> AddAmrUnloadSilkBobbinAssignTable();
+
+        Task<bool> AddLogAmrUnloadSilkBobbinStart();
+
+        Task<bool> MonitorAmrUnloadSilkBobbinAssignTable();
+
+        bool IsAmrUnloadSilkBobbinAssignTableFinish();
+
+        Task<bool> SetAmrUnloadSilkBobbinComplete();
+
+        Task<bool> AddLogAmrUnloadSilkBobbinFinish();
+
         //Common
         void ResetCmdAutoMode();
 

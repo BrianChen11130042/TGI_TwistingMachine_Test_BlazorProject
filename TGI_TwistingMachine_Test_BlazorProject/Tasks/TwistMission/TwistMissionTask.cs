@@ -13,6 +13,8 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
             interval = 1;
         }
 
+        #region Method
+
         public Task GetMachineNumber()
         {
             return pack.GetMachineNumber();
@@ -157,6 +159,38 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
         {
             return pack.AddLogPersonnelCutAndCollectFinish();
         }
+
+        public Task<bool> AddAmrUnloadSilkBobbinAssignTable()
+        {
+            return pack.AddAmrUnloadSilkBobbinAssignTable();
+        }
+
+        public Task<bool> AddLogAmrUnloadSilkBobbinStart()
+        {
+            return pack.AddLogAmrUnloadSilkBobbinStart();
+        }
+
+        public Task<bool> MonitorAmrUnloadSilkBobbinAssignTable()
+        {
+            return pack.MonitorAmrUnloadSilkBobbinAssignTable();
+        }
+
+        public bool IsAmrUnloadSilkBobbinAssignTableFinish()
+        {
+            return pack.IsAmrUnloadSilkBobbinAssignTableFinish();
+        }
+
+        public Task<bool> SetAmrUnloadSilkBobbinComplete()
+        {
+            return pack.SetAmrUnloadSilkBobbinComplete();
+        }
+
+        public Task<bool> AddLogAmrUnloadSilkBobbinFinish()
+        {
+            return pack.AddLogAmrUnloadSilkBobbinFinish();
+        }
+
+        #endregion
     }
 
     public enum ETwistMission
@@ -488,6 +522,90 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
                             else
                             {
                                 Set(20);
+                            }
+                            break;
+                    }
+                    break;
+
+                case ETwistMission.AmrUnloadSilkBobbin:
+                    switch(S3)
+                    {
+                        case 0:
+                            if(await AddAmrUnloadSilkBobbinAssignTable())
+                            {
+                                if(await AddLogAmrUnloadSilkBobbinStart())
+                                {
+                                    Set(10);
+                                }
+                                else
+                                {
+                                    SaveState();
+                                    Set(ES1.Error, ETwistMission.None, 0);
+                                }
+                            }
+                            else
+                            {
+                                SaveState();
+                                Set(ES1.Error, ETwistMission.None, 0);
+                            }
+                            break;
+
+                        case 10:
+                            if(await MonitorAmrUnloadSilkBobbinAssignTable())
+                            {
+                                if(IsAmrUnloadSilkBobbinAssignTableFinish())
+                                {
+                                    Set(20);
+                                }
+                                else
+                                {
+                                    Set(10);
+                                }
+                            }
+                            else
+                            {
+                                SaveState();
+                                Set(ES1.Error, ETwistMission.None, 0);
+                            }
+                            break;
+
+                        case 20:
+                            if (await SetAmrUnloadSilkBobbinComplete())
+                            {
+                                if(await AddLogAmrUnloadSilkBobbinFinish())
+                                {
+                                    ResetCmdMissionCompleted();
+
+                                    Set(30);
+                                }
+                                else
+                                {
+                                    SaveState();
+                                    Set(ES1.Error, ETwistMission.None, 0);
+                                }
+                            }
+                            else
+                            {
+                                SaveState();
+                                Set(ES1.Error, ETwistMission.None, 0);
+                            }
+                            break;
+
+                        case 30:
+                            if (IsGetTwistTableInQueue())
+                            {
+                                if (!IsAmrUnloadSilkBobbin())
+                                {
+                                    Set(ETwistMission.CheckMission, 0);
+                                }
+                                else
+                                {
+                                    Set(30);
+                                }
+                            }
+                            else
+                            {
+                                Set(30);
                             }
                             break;
                     }
