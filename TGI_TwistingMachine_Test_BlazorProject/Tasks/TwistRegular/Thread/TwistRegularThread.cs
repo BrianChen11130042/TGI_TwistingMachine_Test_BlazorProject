@@ -45,14 +45,11 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistRegular.Thread
                         case 0:
                             await twistRegularTask.Run();
 
-                            if(twistRegularTask.key == EHandshakeKey.Finish)
+                            if(twistRegularTask.key == EHandshakeKey.Finish && twistRegularTask.isError)
                             {
-                                if(twistRegularTask.isError)
-                                {
-                                    SaveState();
+                                SaveState();
 
-                                    isError = true;
-                                }
+                                isError = true;
                             }
 
                             Set(0);
