@@ -39,7 +39,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Observer
         }
     }
 
-    public partial class ObserverLibrary : ISystemObserverable
+    public partial class ObserverLibrary : ISystemObservable
     {
         List<ISystemObserver> osSystem { get; set; }
 
@@ -85,7 +85,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Observer
         }
     }
 
-    public partial class ObserverLibrary : ITwistInformObserverable
+    public partial class ObserverLibrary : ITwistInformObservable
     {
         List<ITwistInformObserver> osTwist { get; set; }
 
@@ -115,6 +115,41 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Observer
                 foreach(var o in osTwist)
                 {
                     await o.HandleTwistUpdated(list);
+                }
+            }
+        }
+    }
+
+    public partial class ObserverLibrary : ILogObservable
+    {
+        List<ILogObserver> osLog { get; set; }
+
+        public void AddLogObserver(ILogObserver o)
+        {
+            if (osLog == null)
+                osLog = new List<ILogObserver>();
+
+            if(!osLog.Contains(o))
+            {
+                osLog.Add(o);
+            }
+        }
+
+        public void RemoveLogObserver(ILogObserver o)
+        {
+            if(osLog != null && osLog.Contains(o))
+            {
+                osLog.Remove(o);
+            }
+        }
+
+        public async Task NotifyLogUpdated(List<LogTable> list)
+        {
+            if(osLog != null)
+            {
+                foreach(var o in osLog)
+                {
+                    await o.HandleLogUpdated(list);
                 }
             }
         }

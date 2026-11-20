@@ -2,7 +2,7 @@
 
 namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Observer.Interface
 {
-    public interface ITwistInformObserverable
+    public interface ITwistInformObservable
     {
         void AddTwistInformObserver(ITwistInformObserver o);
 

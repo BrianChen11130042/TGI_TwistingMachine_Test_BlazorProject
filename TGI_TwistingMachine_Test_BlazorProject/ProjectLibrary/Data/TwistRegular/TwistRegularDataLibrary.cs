@@ -13,12 +13,12 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data
         readonly ILogsTableLibrary ILogTableLibrary;
         readonly ITwistTableLibrary ITwistTableLibrary;
 
-        readonly ITwistInformObserverable ITwistInformObser;
+        readonly ITwistInformObservable ITwistInformObser;
         readonly INLogObservable INLogObser;
 
         public TwistRegularDataLibrary(ILogsTableLibrary ILogTableLibrary,
                                 ITwistTableLibrary ITwistTableLibrary,
-                                ITwistInformObserverable ITwistInformObser,
+                                ITwistInformObservable ITwistInformObser,
                                 INLogObservable INLogObser)
         {
             this.ILogTableLibrary = ILogTableLibrary;

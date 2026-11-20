@@ -29,7 +29,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.DbTable.MissionL
 
     public partial class LogsTableLibrary : ILogsTableLibrary
     {
-        public async Task<(bool status, string msg)> InitLogDataInQueue()
+        public async Task<(bool status, string msg)> InitListLogInQueue()
         {
             try
             {

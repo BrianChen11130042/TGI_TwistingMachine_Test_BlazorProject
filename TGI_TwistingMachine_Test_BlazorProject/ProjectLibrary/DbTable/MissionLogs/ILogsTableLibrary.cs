@@ -6,7 +6,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.DbTable.MissionL
     {
         List<LogTable> listLogDataInQueue { get; set; }
 
-        Task<(bool status, string msg)> InitLogDataInQueue();
+        Task<(bool status, string msg)> InitListLogInQueue();
 
         Task<(bool status, string msg)> AddLogData(LogTable data);
     }

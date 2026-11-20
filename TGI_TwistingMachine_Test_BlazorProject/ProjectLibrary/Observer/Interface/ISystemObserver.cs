@@ -1,6 +1,6 @@
 ﻿namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Observer.Interface
 {
-    public interface ISystemObserverable
+    public interface ISystemObservable
     {
         void AddSystemObserver(ISystemObserver o);
 
