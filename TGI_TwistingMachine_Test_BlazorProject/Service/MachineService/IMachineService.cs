@@ -1,5 +1,6 @@
 ﻿using CommonRazorLibraryB.Library.TGITwistingMachine.Config;
 using CommonRazorLibraryB.Manager.ModbusTcp.Master;
+using TGI_TwistingMachine_Test_BlazorProject.EFModel;
 
 namespace TGI_TwistingMachine_Test_BlazorProject.Service.MachineService
 {
@@ -16,6 +17,11 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Service.MachineService
 
         Task SetTwistConfig(TgiTwistConfig config);
 
+        //Twist Table & Ports Config
+        Task<List<TwistingMachineTable>> GetTwistAndPortsTableConfig();
+
+        Task SetTwistAndPortsTableConfig(List<TwistingMachineTable> listData);
+
 
         //Systen
         Task Init();
@@ -23,6 +29,8 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Service.MachineService
         event dgInitResult dgInitResult;
 
         event dgDisconnect dgDisconnect;
+
+        event dgConfigResult dgConfigResult;
 
         event dgRefreshConfigPage dgRefreshConfigPage;
     }

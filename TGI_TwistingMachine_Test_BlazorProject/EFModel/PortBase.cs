@@ -27,7 +27,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.EFModel
 
         public bool Operating { get; set; }
 
-        public bool Enable { get; set; }
+        public bool PortEnable { get; set; }
 
         public virtual TwistingMachineTable? MachineTable { get; set; }
     }

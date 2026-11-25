@@ -4,12 +4,17 @@ using CommonRazorLibraryB.Library.TGITwistingMachine.Property;
 using CommonRazorLibraryB.Manager.ModbusTcp.Master;
 using CommonRazorLibraryB.Tools.NLogWritter;
 using CommonRazorLibraryB.UIComponentTools.ToastMessage;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting.WindowsServices;
 using TGI_TwistingMachine_Test_BlazorProject.Components;
+using TGI_TwistingMachine_Test_BlazorProject.EFModel;
 using TGI_TwistingMachine_Test_BlazorProject.EquipName.TwistingMachine;
+using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.DbTable.MissionLogs;
+using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.DbTable.TwistingMachine;
 using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Observer;
 using TGI_TwistingMachine_Test_BlazorProject.Scope;
 using TGI_TwistingMachine_Test_BlazorProject.Service.MachineService;
+using TGI_TwistingMachine_Test_BlazorProject.Service.TwistMissionService;
 
 //var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +28,9 @@ var webApOpts = new WebApplicationOptions
 var builder = WebApplication.CreateBuilder(webApOpts);
 builder.Host.UseWindowsService();
 
+var connectString = builder.Configuration.GetConnectionString("TgiTwistString")
+    ?? throw new NullReferenceException("No Connection String in Config!");
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -32,6 +40,12 @@ builder.Services.AddDevExpressBlazor(options =>
     options.SizeMode = DevExpress.Blazor.SizeMode.Medium;
 });
 builder.Services.AddMvc();
+
+builder.Services.AddDbContext<TwistDbContext>(options =>
+options.UseSqlServer(connectString));
+
+builder.Services.AddSingleton<LogsTableLibrary>();
+builder.Services.AddSingleton<TwistTableLibrary>();
 
 string filePath = System.AppDomain.CurrentDomain.BaseDirectory;
 
@@ -50,6 +64,7 @@ builder.Services.AddSingleton<TgiTwistLibrary<ETwist>>();
 builder.Services.AddSingleton<TgiScope>();
 
 builder.Services.AddSingleton<IMachineService, MachineService>();
+builder.Services.AddSingleton<ITwistMissionService, TwistMissionService>();
 
 var app = builder.Build();
 

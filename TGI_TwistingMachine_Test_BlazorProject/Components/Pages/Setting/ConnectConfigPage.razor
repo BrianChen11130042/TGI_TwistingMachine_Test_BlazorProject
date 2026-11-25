@@ -38,6 +38,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		IService.dgInitResult += _handleInitResult;
+		IService.dgConfigResult += _handleConfigResult;
 		IService.dgRefreshConfigPage += _handleRefreshPage;
 
 		await LoadPageData();
@@ -54,8 +55,6 @@
 		ModbusTcpMasterConfig edit = (ModbusTcpMasterConfig)e.EditModel;
 
 		await IService.SetModbusTcpConfig(edit);
-
-		IToast.NotifySuccess("Modify successfully");
 	}
 
 	async Task editTwist(GridEditModelSavingEventArgs e)
@@ -63,18 +62,28 @@
 		TgiTwistConfig edit = (TgiTwistConfig)e.EditModel;
 
 		await IService.SetTwistConfig(edit);
-
-		IToast.NotifySuccess("Modify successfully");
 	}
 
 	async Task init()
 	{
-		IToast.NotifyInfo("Init Start");
+		IToast.NotifyInfo("Initialization Started");
 
 		await IService.Init();
 	}
 
 	async Task _handleInitResult(bool success, string msg)
+	{
+		if (success)
+		{
+			IToast.NotifySuccess(msg);
+		}
+		else
+		{
+			IToast.NotifyError(msg);
+		}
+	}
+
+	async Task _handleConfigResult(bool success, string msg)
 	{
 		if (success)
 		{
@@ -95,6 +104,7 @@
 	public void Dispose()
 	{
 		IService.dgInitResult -= _handleInitResult;
+		IService.dgConfigResult -= _handleConfigResult;
 		IService.dgRefreshConfigPage -= _handleRefreshPage;
 	}
 

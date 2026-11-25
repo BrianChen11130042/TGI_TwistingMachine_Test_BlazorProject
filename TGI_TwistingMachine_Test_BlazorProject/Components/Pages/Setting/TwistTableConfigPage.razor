@@ -1,0 +1,271 @@
+﻿@page "/TwistTableConfig"
+@using CommonRazorLibraryB.UIComponentTools.ToastMessage
+@using TGI_TwistingMachine_Test_BlazorProject.EFModel
+@using TGI_TwistingMachine_Test_BlazorProject.Service.MachineService
+@inject IMachineService IService
+@inject IToastMessage IToast
+@implements IDisposable
+
+<DxGrid Data="@listTwistTable"
+        KeyFieldName="@nameof(TwistingMachineTable.Id)"
+        PageSize="12"
+        EditMode="GridEditMode.EditRow"
+        CustomizeEditModel="OnTwistTableCustomizeEditModel"
+        EditModelSaving="OnTwistTableSaving"
+        DataItemDeleting="OnTwistTableDeleting">
+
+    <Columns>
+        <DxGridCommandColumn Width="140" />
+        <DxGridDataColumn FieldName="@nameof(TwistingMachineTable.MachineNumber)" Caption="Machine Number" />
+        <DxGridDataColumn FieldName="@nameof(TwistingMachineTable.CakeCount)" Caption="Cake Count" ReadOnly="true" />
+        <DxGridDataColumn FieldName="@nameof(TwistingMachineTable.BobbinCount)" Caption="Bobbin Count" ReadOnly="true" />
+    </Columns>
+
+    <DetailRowTemplate Context="detailContext">
+        @{
+            var machine = (TwistingMachineTable)detailContext.DataItem;
+         }
+
+         <div class="p-2">
+
+            <h5 class="mb-2">CakeTables (Machine @machine.MachineNumber)</h5>
+            <DxGrid Data="@machine.CakeTables"
+                    KeyFieldName="@nameof(CakeTable.Id)"
+                    PageSize="10"
+                    EditMode="GridEditMode.EditRow"
+                    CustomizeEditModel="args => OnCakeTableCustomizeEditModel(args, machine)"
+                    EditModelSaving="args => OnCakeTableSaving(args, machine)"
+                    DataItemDeleting="args => OnCakeTableDeleting(args, machine)">
+                <Columns>
+                    <DxGridCommandColumn Width="140" />
+                    <DxGridDataColumn FieldName="@nameof(CakeTable.PortNumber)" Caption="Port Number" />
+                    <DxGridDataColumn FieldName="@nameof(CakeTable.CakeRFID)" Caption="CakeRFID" />
+                    <DxGridDataColumn FieldName="@nameof(CakeTable.SilkStatus)" Caption="Silk Status" />
+                    <DxGridDataColumn FieldName="@nameof(CakeTable.Side)" Caption="Side" />
+                    <DxGridDataColumn FieldName="@nameof(CakeTable.RobotNumber)" Caption="Robot Number" />
+                    <DxGridDataColumn FieldName="@nameof(CakeTable.AmrCellName)" Caption="AMR Cell" />
+                    <DxGridDataColumn FieldName="@nameof(CakeTable.Operating)" Caption="Operating" />
+                    <DxGridDataColumn FieldName="@nameof(CakeTable.PortEnable)" Caption="Enable" />
+                </Columns>
+            </DxGrid>
+
+            <h5 class="mt-3 mb-2">BobbinTables (Machine @machine.MachineNumber)</h5>
+            <DxGrid Data="@machine.BobbinTables"
+                    KeyFieldName="@nameof(BobbinTable.Id)"
+                    PageSize="10"
+                    EditMode="GridEditMode.EditRow"
+                    CustomizeEditModel="args => OnBobbinTableCustomizeEditModel(args, machine)"
+                    EditModelSaving="args => OnBobbinTableSaving(args, machine)"
+                    DataItemDeleting="args => OnBobbinTableDeleting(args, machine)">
+                <Columns>
+                    <DxGridCommandColumn Width="140" />
+                    <DxGridDataColumn FieldName="@nameof(BobbinTable.PortNumber)" Caption="Port Number" />
+                    <DxGridDataColumn FieldName="@nameof(BobbinTable.BobbinRFID)" Caption="BobbinRFID" />
+                    <DxGridDataColumn FieldName="@nameof(BobbinTable.SilkStatus)" Caption="Silk Status" />
+                    <DxGridDataColumn FieldName="@nameof(BobbinTable.Side)" Caption="Side" />
+                    <DxGridDataColumn FieldName="@nameof(BobbinTable.RobotNumber)" Caption="Robot Number" />
+                    <DxGridDataColumn FieldName="@nameof(BobbinTable.AmrCellName)" Caption="AMR Cell" />
+                    <DxGridDataColumn FieldName="@nameof(BobbinTable.Operating)" Caption="Operating" />
+                    <DxGridDataColumn FieldName="@nameof(BobbinTable.PortEnable)" Caption="Enable" />
+                </Columns>
+            </DxGrid>
+
+         </div>
+    </DetailRowTemplate>
+</DxGrid>
+
+<div class="text-center mt-4">
+    <DxButton Text="Save"
+              RenderStyle="ButtonRenderStyle.Primary"
+              SizeMode="SizeMode.Large"
+              Click="SavePageData" />
+</div>
+
+@code {
+    List<TwistingMachineTable> listTwistTable { get; set; } = new List<TwistingMachineTable>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        IService.dgConfigResult += _handleConfigResult;
+        IService.dgRefreshConfigPage += _handleRefreshPage;
+
+        await LoadPageData();
+    }
+
+    async Task LoadPageData()
+    {
+        listTwistTable = await IService.GetTwistAndPortsTableConfig();
+    }
+
+    async Task SavePageData()
+    {
+        await IService.SetTwistAndPortsTableConfig(listTwistTable);
+    }
+
+    #region Twist Table Events
+
+    void OnTwistTableCustomizeEditModel(GridCustomizeEditModelEventArgs e)
+    {
+        if (!e.IsNew)
+            return;
+
+        var model = (TwistingMachineTable)e.EditModel;
+        model.Id = Guid.NewGuid();
+        model.CakeTables = new List<CakeTable>();
+        model.BobbinTables = new List<BobbinTable>();
+    }
+
+    Task OnTwistTableSaving(GridEditModelSavingEventArgs e)
+    {
+        var edit = (TwistingMachineTable)e.EditModel;
+
+        if (e.IsNew)
+        {
+            listTwistTable.Add(edit);
+        }
+        else
+        {
+            var target = listTwistTable.FirstOrDefault(x => x.Id == edit.Id);
+
+            if (target is null)
+                return Task.CompletedTask;
+
+            target.MachineNumber = edit.MachineNumber;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    Task OnTwistTableDeleting(GridDataItemDeletingEventArgs e)
+    {
+        var item = (TwistingMachineTable)e.DataItem;
+        listTwistTable.Remove(item);
+
+        return Task.CompletedTask;
+    }
+
+    #endregion
+
+    #region Cake Table Events
+
+    void OnCakeTableCustomizeEditModel(GridCustomizeEditModelEventArgs e, TwistingMachineTable machine)
+    {
+        if (!e.IsNew) 
+            return;
+
+        var model = (CakeTable)e.EditModel;
+        model.Id = Guid.NewGuid();
+        model.MachineId = machine.Id;
+    }
+
+    Task OnCakeTableSaving(GridEditModelSavingEventArgs e, TwistingMachineTable machine)
+    {
+        var edit = (CakeTable)e.EditModel;
+
+        if (e.IsNew)
+        {
+            machine.CakeTables.Add(edit);
+        }
+        else
+        {
+            var target = machine.CakeTables.FirstOrDefault(x => x.Id == edit.Id);
+
+            if (target is null) 
+                return Task.CompletedTask;
+
+            target.Side = edit.Side;
+            target.PortNumber = edit.PortNumber;
+            target.RobotNumber = edit.RobotNumber;
+            target.AmrCellName = edit.AmrCellName;
+            target.SilkStatus = edit.SilkStatus;
+            target.Operating = edit.Operating;
+            target.PortEnable = edit.PortEnable;
+            target.CakeRFID = edit.CakeRFID;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    Task OnCakeTableDeleting(GridDataItemDeletingEventArgs e, TwistingMachineTable machine)
+    {
+        var item = (CakeTable)e.DataItem;
+        machine.CakeTables.Remove(item);
+
+        return Task.CompletedTask;
+    }
+
+    #endregion
+
+    #region Bobbin Table Events
+
+    void OnBobbinTableCustomizeEditModel(GridCustomizeEditModelEventArgs e, TwistingMachineTable machine)
+    {
+        if (!e.IsNew) 
+            return;
+
+        var model = (BobbinTable)e.EditModel;
+        model.Id = Guid.NewGuid();
+        model.MachineId = machine.Id;
+    }
+
+    Task OnBobbinTableSaving(GridEditModelSavingEventArgs e, TwistingMachineTable machine)
+    {
+        var edit = (BobbinTable)e.EditModel;
+
+        if (e.IsNew)
+        {
+            machine.BobbinTables.Add(edit);
+        }
+        else
+        {
+            var target = machine.BobbinTables.FirstOrDefault(x => x.Id == edit.Id);
+
+            if (target is null)
+                return Task.CompletedTask;
+
+            target.Side = edit.Side;
+            target.PortNumber = edit.PortNumber;
+            target.RobotNumber = edit.RobotNumber;
+            target.AmrCellName = edit.AmrCellName;
+            target.SilkStatus = edit.SilkStatus;
+            target.Operating = edit.Operating;
+            target.PortEnable = edit.PortEnable;
+            target.BobbinRFID = edit.BobbinRFID;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    Task OnBobbinTableDeleting(GridDataItemDeletingEventArgs e, TwistingMachineTable machine)
+    {
+        var item = (BobbinTable)e.DataItem;
+        machine.BobbinTables.Remove(item);
+        return Task.CompletedTask;
+    }
+
+    #endregion
+
+    async Task _handleConfigResult(bool success, string msg)
+    {
+        if (success)
+        {
+            IToast.NotifySuccess(msg);
+        }
+        else
+        {
+            IToast.NotifyError(msg);
+        }
+    }
+
+    async Task _handleRefreshPage()
+    {
+        await LoadPageData();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        IService.dgConfigResult -= _handleConfigResult;
+        IService.dgRefreshConfigPage -= _handleRefreshPage;
+    }
+}

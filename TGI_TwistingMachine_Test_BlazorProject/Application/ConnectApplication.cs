@@ -16,13 +16,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Application
             this.modbusTcpManager = modbusTcpManager;
             this.twistConfigManager = twistConfigManager;
         }
-
-        public dgSysInitResult dgSysInitResult;
-        public dgSysDisconnect dgSysDisconnect;
     }
-
-    public delegate Task dgSysInitResult(bool success, string msg);
-    public delegate Task dgSysDisconnect(string msg);
 
     public partial class ConnectApplication
     {
@@ -73,8 +67,13 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Application
         }
     }
 
+    public delegate Task dgSysInitResult(bool success, string msg);
+    public delegate Task dgSysDisconnect(string msg);
+
     public partial class ConnectApplication : ISystemObserver
     {
+        public dgSysInitResult dgSysInitResult;
+        public dgSysDisconnect dgSysDisconnect;
 
         public async Task HandleInitResult(bool success, string msg)
         {

@@ -136,12 +136,12 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.SystemControl.Init
 
         public async Task NotifyInitialSuccess()
         {
-            await IDataLib.NotifyInitialResult(true, "Init Success");
+            await IDataLib.NotifyInitialResult(true, "Initialization succeeded");
         }
 
         public async Task NotifyInitialFail()
         {
-            await IDataLib.NotifyInitialResult(false, "Init Fail");
+            await IDataLib.NotifyInitialResult(false, "Initialization failed");
         }
 
         public async Task NotifyTwistUpdate()
