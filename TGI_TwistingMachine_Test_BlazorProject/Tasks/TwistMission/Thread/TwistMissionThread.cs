@@ -5,24 +5,11 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission.Thread
 
     public partial class TwistMissionThread
     {
-        readonly TwistMissionTask twist1;
-        readonly TwistMissionTask twist2;
-        readonly TwistMissionTask twist3;
-        readonly TwistMissionTask twist4;
-        readonly TwistMissionTask twist5;
+        readonly List<TwistMissionTask> listTwistMission;
 
-
-        public TwistMissionThread(TwistMissionTask twist1,
-                                  TwistMissionTask twist2,
-                                  TwistMissionTask twist3,
-                                  TwistMissionTask twist4,
-                                  TwistMissionTask twist5)
+        public TwistMissionThread(List<TwistMissionTask> listTwistMission)
         {
-            this.twist1 = twist1;
-            this.twist2 = twist2;
-            this.twist3 = twist3;
-            this.twist4 = twist4;
-            this.twist5 = twist5;
+            this.listTwistMission = listTwistMission;
 
             interval = 1;
         }
@@ -38,11 +25,10 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission.Thread
     {
         public async override Task Init()
         {
-            twist1.Set(ES1.Action, ETwistMission.CheckMission, 0);
-            twist2.Set(ES1.Action, ETwistMission.CheckMission, 0);
-            twist3.Set(ES1.Action, ETwistMission.CheckMission, 0);
-            twist4.Set(ES1.Action, ETwistMission.CheckMission, 0);
-            twist5.Set(ES1.Action, ETwistMission.CheckMission, 0);
+            foreach (TwistMissionTask mission in listTwistMission)
+            {
+                mission.Set(ES1.Action, ETwistMission.CheckMission, 0);
+            }
 
             Set(ES1.Action, ETwistMissionThread.TwistMission, 0);
         }
@@ -61,17 +47,9 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission.Thread
                     switch(S3)
                     {
                         case 0:
-                            await Task.WhenAll(twist1.Run(),
-                                               twist2.Run(),
-                                               twist3.Run(),
-                                               twist4.Run(),
-                                               twist5.Run());
+                            await Task.WhenAll(listTwistMission.Select(t => t.Run()));
 
-                            if ((twist1.key == EHandshakeKey.Finish && twist1.isError) ||
-                                (twist2.key == EHandshakeKey.Finish && twist2.isError) ||
-                                (twist3.key == EHandshakeKey.Finish && twist3.isError) ||
-                                (twist4.key == EHandshakeKey.Finish && twist4.isError) ||
-                                (twist5.key == EHandshakeKey.Finish && twist5.isError))
+                            if (listTwistMission.Any(t => t.key == EHandshakeKey.Finish && t.isError))
                             {
                                 SaveState();
                                 isError = true;

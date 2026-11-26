@@ -20,22 +20,19 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Scope
                                                           twistLibrary,
                                                           twistTableLibrary,
                                                           logsTableLibrary,
-                                                          dcTwistMissionDataLibrary);
+                                                          _getDcTwistMissionDataLibrary());
         }
 
-        Dictionary<ETwist, ITwistMissionDataLibrary> dcTwistMissionDataLibrary
+        Dictionary<ETwist, ITwistMissionDataLibrary> _getDcTwistMissionDataLibrary()
         {
-            get
+            Dictionary<ETwist, ITwistMissionDataLibrary> dc = new Dictionary<ETwist, ITwistMissionDataLibrary>();
+
+            foreach (KeyValuePair<ETwist, TwistMissionDataLibrary> pair in dcTwistMissionDataLibrary)
             {
-                return new Dictionary<ETwist, ITwistMissionDataLibrary>()
-                {
-                    { ETwist.Twist1, twist1MissionDataLibrary },
-                    { ETwist.Twist2, twist2MissionDataLibrary },
-                    { ETwist.Twist3, twist3MissionDataLibrary },
-                    { ETwist.Twist4, twist4MissionDataLibrary },
-                    { ETwist.Twist5, twist5MissionDataLibrary },
-                };
+                dc.Add(pair.Key, pair.Value);
             }
+
+            return dc;
         }
 
         void _initApplication()

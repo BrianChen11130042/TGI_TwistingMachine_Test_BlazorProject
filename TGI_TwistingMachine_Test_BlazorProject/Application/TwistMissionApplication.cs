@@ -23,7 +23,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Application
                                        ITgiTwistAdapter<ETwist> ITwistOp,
                                        ITwistTableLibrary ITwistTableLib,
                                        ILogsTableLibrary ILogsTableLib,
-                                       Dictionary<ETwist, ITwistMissionDataLibrary>  dcTwistMissionDataLib)
+                                       Dictionary<ETwist, ITwistMissionDataLibrary> dcTwistMissionDataLib)
         {
             this.ITwistPack = ITwistPack;
             this.ITwistOp = ITwistOp;

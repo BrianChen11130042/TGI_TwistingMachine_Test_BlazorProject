@@ -1,4 +1,5 @@
-﻿using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data;
+﻿using TGI_TwistingMachine_Test_BlazorProject.EquipName.TwistingMachine;
+using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data;
 using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data.Error;
 using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data.Initial;
 using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data.TwistMission;
@@ -17,11 +18,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Scope
 
         public TwistRegularDataLibrary allTwistRegularDataLibrary { get; set; }
 
-        public TwistMissionDataLibrary twist1MissionDataLibrary { get; set; }
-        public TwistMissionDataLibrary twist2MissionDataLibrary { get; set; }
-        public TwistMissionDataLibrary twist3MissionDataLibrary { get; set; }
-        public TwistMissionDataLibrary twist4MissionDataLibrary { get; set; }
-        public TwistMissionDataLibrary twist5MissionDataLibrary { get; set; }
+        public Dictionary<ETwist, TwistMissionDataLibrary> dcTwistMissionDataLibrary { get; set; }
 
 
         void _createDataLibrary()
@@ -46,25 +43,17 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Scope
                                                                      observerLibrary,
                                                                      observerLibrary);
 
-            twist1MissionDataLibrary = new TwistMissionDataLibrary(logsTableLibrary,
-                                                                   twistTableLibrary,
-                                                                   observerLibrary);
+            if (dcTwistMissionDataLibrary is null)
+                dcTwistMissionDataLibrary = new Dictionary<ETwist, TwistMissionDataLibrary>();
 
-            twist2MissionDataLibrary = new TwistMissionDataLibrary(logsTableLibrary,
-                                                                   twistTableLibrary,
-                                                                   observerLibrary);
+            dcTwistMissionDataLibrary.Clear();
 
-            twist3MissionDataLibrary = new TwistMissionDataLibrary(logsTableLibrary,
-                                                                   twistTableLibrary,
-                                                                   observerLibrary);
-
-            twist4MissionDataLibrary = new TwistMissionDataLibrary(logsTableLibrary,
-                                                                   twistTableLibrary,
-                                                                   observerLibrary);
-
-            twist5MissionDataLibrary = new TwistMissionDataLibrary(logsTableLibrary,
-                                                                   twistTableLibrary,
-                                                                   observerLibrary);
+            foreach (ETwist twist in Enum.GetValues(typeof(ETwist)))
+            {
+                dcTwistMissionDataLibrary.Add(twist, new TwistMissionDataLibrary(logsTableLibrary,
+                                                                                 twistTableLibrary,
+                                                                                 observerLibrary));
+            }
         }
     }
 }

@@ -59,42 +59,35 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Scope
 
     public partial class TgiScope
     {
-        public TwistMissionTaskPack<ETwist> twistMissionTaskPack1;
-        public TwistMissionTaskPack<ETwist> twistMissionTaskPack2;
-        public TwistMissionTaskPack<ETwist> twistMissionTaskPack3;
-        public TwistMissionTaskPack<ETwist> twistMissionTaskPack4;
-        public TwistMissionTaskPack<ETwist> twistMissionTaskPack5;
+        public Dictionary<ETwist, TwistMissionTaskPack<ETwist>> dcTwistMissionTaskPack { get; set; }
 
-        public TwistMissionTask twistMissionTask1;
-        public TwistMissionTask twistMissionTask2;
-        public TwistMissionTask twistMissionTask3;
-        public TwistMissionTask twistMissionTask4;
-        public TwistMissionTask twistMissionTask5;
+        public List<TwistMissionTask> listTwistMissionTask { get; set; }
 
         void _initMissionTask()
         {
-            twistMissionTaskPack1 = new TwistMissionTaskPack<ETwist>(ETwist.Twist1, twistLibrary, 
-                                                                     twistLibrary, twist1MissionDataLibrary);
-            twistMissionTaskPack2 = new TwistMissionTaskPack<ETwist>(ETwist.Twist2, twistLibrary,
-                                                                     twistLibrary, twist2MissionDataLibrary);
-            twistMissionTaskPack3 = new TwistMissionTaskPack<ETwist>(ETwist.Twist3, twistLibrary,
-                                                                     twistLibrary, twist3MissionDataLibrary);
-            twistMissionTaskPack4 = new TwistMissionTaskPack<ETwist>(ETwist.Twist4, twistLibrary,
-                                                                     twistLibrary, twist4MissionDataLibrary);
-            twistMissionTaskPack5 = new TwistMissionTaskPack<ETwist>(ETwist.Twist5, twistLibrary,
-                                                                     twistLibrary, twist5MissionDataLibrary);
 
-            twistMissionTask1 = new TwistMissionTask(twistMissionTaskPack1);
-            twistMissionTask2 = new TwistMissionTask(twistMissionTaskPack2);
-            twistMissionTask3 = new TwistMissionTask(twistMissionTaskPack3);
-            twistMissionTask4 = new TwistMissionTask(twistMissionTaskPack4);
-            twistMissionTask5 = new TwistMissionTask(twistMissionTaskPack5);
+            if (dcTwistMissionTaskPack is null)
+                dcTwistMissionTaskPack = new Dictionary<ETwist, TwistMissionTaskPack<ETwist>>();
 
-            twistMissionTask1.Set(ES1.None, ETwistMission.None, 0);
-            twistMissionTask2.Set(ES1.None, ETwistMission.None, 0);
-            twistMissionTask3.Set(ES1.None, ETwistMission.None, 0);
-            twistMissionTask4.Set(ES1.None, ETwistMission.None, 0);
-            twistMissionTask5.Set(ES1.None, ETwistMission.None, 0);
+            if (listTwistMissionTask is null)
+                listTwistMissionTask = new List<TwistMissionTask>();
+
+
+            dcTwistMissionTaskPack.Clear();
+            listTwistMissionTask.Clear();
+
+            foreach (ETwist twist in Enum.GetValues(typeof(ETwist)))
+            {
+                dcTwistMissionTaskPack.Add(twist, new TwistMissionTaskPack<ETwist>(twist, twistLibrary,
+                                                                                   twistLibrary, dcTwistMissionDataLibrary[twist]));
+
+                listTwistMissionTask.Add(new TwistMissionTask(dcTwistMissionTaskPack[twist]));
+            }
+
+            foreach(TwistMissionTask twistMission in listTwistMissionTask)
+            {
+                twistMission.Set(ES1.None, ETwistMission.None, 0);
+            }
         }
     }
 
@@ -114,11 +107,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Scope
             twistRegularThread = new TwistRegularThread(twistRegularTask);
             twistRegularThread.Set(ES1.None, ETwistRegularThread.None, 0);
 
-            twistMissionThread = new TwistMissionThread(twistMissionTask1,
-                                                        twistMissionTask2,
-                                                        twistMissionTask3,
-                                                        twistMissionTask4,
-                                                        twistMissionTask5);
+            twistMissionThread = new TwistMissionThread(listTwistMissionTask);
             twistMissionThread.Set(ES1.None, ETwistMissionThread.None, 0);
 
             mainThread = new MainThread(systemControlThread, twistRegularThread, twistMissionThread);
