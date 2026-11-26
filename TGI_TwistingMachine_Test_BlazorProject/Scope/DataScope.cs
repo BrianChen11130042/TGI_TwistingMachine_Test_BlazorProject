@@ -41,6 +41,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Scope
             allTwistRegularDataLibrary = new TwistRegularDataLibrary(logsTableLibrary,
                                                                      twistTableLibrary,
                                                                      observerLibrary,
+                                                                     observerLibrary,
                                                                      observerLibrary);
 
             if (dcTwistMissionDataLibrary is null)

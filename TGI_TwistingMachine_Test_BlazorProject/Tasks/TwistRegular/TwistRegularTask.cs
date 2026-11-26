@@ -27,6 +27,11 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistRegular
         {
             return pack.NotifyTwistUpdate();
         }
+
+        public Task NotifyLogUpdate()
+        {
+            return pack.NotifyLogUpdate();
+        }
     }
 
     public enum ETwistRegular
@@ -51,12 +56,13 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistRegular
                     switch(S3)
                     {
                         case 0:
-                            if(await GetTwistStatus())
+                            await NotifyLogUpdate();
+
+                            if (await GetTwistStatus())
                             {
                                 if(await UpsertTwistTable())
                                 {
                                     await NotifyTwistUpdate();
-
                                     Set(ETwistRegular.MonitorStatus, 0);
                                 }
                                 else

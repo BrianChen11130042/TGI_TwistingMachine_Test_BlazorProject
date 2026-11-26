@@ -14,17 +14,20 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data
         readonly ITwistTableLibrary ITwistTableLibrary;
 
         readonly ITwistInformObservable ITwistInformObser;
+        readonly ILogObservable ILogObser;
         readonly INLogObservable INLogObser;
 
         public TwistRegularDataLibrary(ILogsTableLibrary ILogTableLibrary,
                                        ITwistTableLibrary ITwistTableLibrary,
                                        ITwistInformObservable ITwistInformObser,
+                                       ILogObservable ILogObser,
                                        INLogObservable INLogObser)
         {
             this.ILogTableLibrary = ILogTableLibrary;
             this.ITwistTableLibrary = ITwistTableLibrary;
 
             this.ITwistInformObser = ITwistInformObser;
+            this.ILogObser = ILogObser;
             this.INLogObser = INLogObser;
         }
 
@@ -128,6 +131,11 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data
         public async Task WriteNLogInform(string log)
         {
             await _writeNLogInform(log);
+        }
+
+        public async Task NotifyLogUpdate()
+        {
+            await ILogObser.NotifyLogUpdated(ILogTableLibrary.listLogDataInQueue);
         }
     }
 }

@@ -7,5 +7,7 @@
         Task<bool> UpsertTwistTable();
 
         Task NotifyTwistUpdate();
+
+        Task NotifyLogUpdate();
     }
 }

@@ -79,5 +79,10 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistRegular
         {
             await IDataLib.NotifyTwistUpdate();
         }
+
+        public async Task NotifyLogUpdate()
+        {
+            await IDataLib.NotifyLogUpdate();
+        }
     }
 }

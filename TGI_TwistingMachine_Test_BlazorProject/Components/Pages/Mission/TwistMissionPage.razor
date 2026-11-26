@@ -1,5 +1,308 @@
-﻿<h3>TwistMissionPage</h3>
+﻿@page "/TwistMission/{TwistName}"
+@using CommonRazorLibraryB.UIComponentTools.ToastMessage
+@using TGI_TwistingMachine_Test_BlazorProject.EFModel
+@using TGI_TwistingMachine_Test_BlazorProject.EquipName.TwistingMachine
+@using TGI_TwistingMachine_Test_BlazorProject.Service.TwistMissionService
+@inject ITwistMissionService IService
+@inject NavigationManager Navigation
+@inject IToastMessage IToast
+@implements IDisposable
+
+<div style="height: calc(100vh - 140px);">
+    <DxGridLayout CssClass="h-100"
+                  ColumnSpacing="1rem"
+                  RowSpacing="1rem"
+                  style="height: 100%;">
+        <Rows>
+            <DxGridLayoutRow Areas="status status" Height="45%" />
+            <DxGridLayoutRow Areas="actions logs" Height="55%" />
+        </Rows>
+        <Columns>
+            <DxGridLayoutColumn Width="40%" />
+            <DxGridLayoutColumn Width="60%" />
+        </Columns>
+        <Items>
+            <DxGridLayoutItem Area="status">
+                <Template>
+                    <div style="height: 100%; overflow: auto; padding-right: 4px;">
+                        <DxFormLayout CaptionPosition="CaptionPosition.Horizontal">
+                            <DxFormLayoutItem Caption="Twist" ColSpanMd="4">
+                                <DxTextBox Text="@twist.ToString()" ReadOnly="true" />
+                            </DxFormLayoutItem>
+                            <DxFormLayoutItem Caption="Machine Number" ColSpanMd="4">
+                                <DxSpinEdit Value="@twistTable.MachineNumber" ReadOnly="true" />
+                            </DxFormLayoutItem>
+                            <DxFormLayoutItem Caption="Auto Mode" ColSpanMd="4">
+                                <DxTextBox Text="@_toAutoModeText(twistTable.AutoMode)" ReadOnly="true" />
+                            </DxFormLayoutItem>
+                            <DxFormLayoutItem Caption="Process State" ColSpanMd="6">
+                                <DxTextBox Text="@_toProcessStateText(twistTable.ProcessState)" ReadOnly="true" />
+                            </DxFormLayoutItem>
+                            <DxFormLayoutItem Caption="Machine Status" ColSpanMd="6">
+                                <DxTextBox Text="@_toMachineStatusText(twistTable.MachineStatus)" ReadOnly="true" />
+                            </DxFormLayoutItem>
+                            <DxFormLayoutItem Caption="Started Inform" ColSpanMd="6">
+                                <DxTextBox Text="@_toMissionStartedText(twistTable.MissionStartedInform)" ReadOnly="true" />
+                            </DxFormLayoutItem>
+                            <DxFormLayoutItem Caption="Completed Inform" ColSpanMd="6">
+                                <DxTextBox Text="@_toMissionCompletedText(twistTable.MissionCompletedInform)" ReadOnly="true" />
+                            </DxFormLayoutItem>
+                        </DxFormLayout>
+                        <DxAccordion CssClass="mt-2">
+                            <Items>
+                                <DxAccordionItem Text="Cake / Bobbin Ports" Expanded="false">
+                                    <ContentTemplate>
+                                        <h5 class="mt-2">CakeTables</h5>
+                                        <DxGrid Data="@twistTable.CakeTables"
+                                                KeyFieldName="@nameof(CakeTable.Id)"
+                                                PageSize="10">
+                                            <Columns>
+                                                <DxGridDataColumn FieldName="@nameof(CakeTable.PortNumber)" Caption="Port" />
+                                                <DxGridDataColumn FieldName="@nameof(CakeTable.Side)" Caption="Side" />
+                                                <DxGridDataColumn FieldName="@nameof(CakeTable.SilkStatus)" Caption="Silk Status" />
+                                                <DxGridDataColumn FieldName="@nameof(CakeTable.CakeRFID)" Caption="CakeRFID" />
+                                                <DxGridDataColumn FieldName="@nameof(CakeTable.RobotNumber)" Caption="Robot" />
+                                                <DxGridDataColumn FieldName="@nameof(CakeTable.Operating)" Caption="Operating" />
+                                                <DxGridDataColumn FieldName="@nameof(CakeTable.PortEnable)" Caption="Enable" />
+                                                <DxGridDataColumn FieldName="@nameof(CakeTable.AmrCellName)" Caption="AMR Cell" />
+                                            </Columns>
+                                        </DxGrid>
+                                        <h5 class="mt-3">BobbinTables</h5>
+                                        <DxGrid Data="@twistTable.BobbinTables"
+                                                KeyFieldName="@nameof(BobbinTable.Id)"
+                                                PageSize="10">
+                                            <Columns>
+                                                <DxGridDataColumn FieldName="@nameof(BobbinTable.PortNumber)" Caption="Port" />
+                                                <DxGridDataColumn FieldName="@nameof(BobbinTable.Side)" Caption="Side" />
+                                                <DxGridDataColumn FieldName="@nameof(BobbinTable.SilkStatus)" Caption="Silk Status" />
+                                                <DxGridDataColumn FieldName="@nameof(BobbinTable.BobbinRFID)" Caption="BobbinRFID" />
+                                                <DxGridDataColumn FieldName="@nameof(BobbinTable.RobotNumber)" Caption="Robot" />
+                                                <DxGridDataColumn FieldName="@nameof(BobbinTable.Operating)" Caption="Operating" />
+                                                <DxGridDataColumn FieldName="@nameof(BobbinTable.PortEnable)" Caption="Enable" />
+                                                <DxGridDataColumn FieldName="@nameof(BobbinTable.AmrCellName)" Caption="AMR Cell" />
+                                            </Columns>
+                                        </DxGrid>
+                                    </ContentTemplate>
+                                </DxAccordionItem>
+                            </Items>
+                        </DxAccordion>
+                    </div>
+                </Template>
+            </DxGridLayoutItem>
+
+            <DxGridLayoutItem Area="actions">
+                <Template>
+                    <div style="height: 100%; overflow: auto">
+
+                        <div class="d-grid gap-2 mt-3 mb-3" style="grid-template-columns: 1fr 1fr;">
+                            <DxButton Text="Manual 0"
+                                      RenderStyle="ButtonRenderStyle.Danger"
+                                      Enabled="@(twistTable.AutoMode == 1)"
+                                      Click="@(() => _setAutoMode(0))" />
+                            <DxButton Text="Auto 1"
+                                      RenderStyle="ButtonRenderStyle.Danger"
+                                      Enabled="@(twistTable.AutoMode == 0)"
+                                      Click="@(() => _setAutoMode(1))" />
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <DxButton Text="AMR完成Cake 1"
+                                      RenderStyle="ButtonRenderStyle.Danger"
+                                      Enabled="@_canComplete(1 << 0)"
+                                      Click="@(() => _setMissionCompleted(1 << 0))" />
+                            <DxButton Text="人工完成上Bobbin 2"
+                                      RenderStyle="ButtonRenderStyle.Danger"
+                                      Enabled="@_canComplete(1 << 1)"
+                                      Click="@(() => _setMissionCompleted(1 << 1))" />
+                            <DxButton Text="人工完成剪線 8"
+                                      RenderStyle="ButtonRenderStyle.Danger"
+                                      Enabled="@_canComplete(1 << 3)"
+                                      Click="@(() => _setMissionCompleted(1 << 3))" />
+                            <DxButton Text="AMR完成下Bobbin 16"
+                                      RenderStyle="ButtonRenderStyle.Danger"
+                                      Enabled="@_canComplete(1 << 4)"
+                                      Click="@(() => _setMissionCompleted(1 << 4))" />
+                            <DxButton Text="AMR完成下Cake 32"
+                                      RenderStyle="ButtonRenderStyle.Danger"
+                                      Enabled="@_canComplete(1 << 5)"
+                                      Click="@(() => _setMissionCompleted(1 << 5))" />
+                            <DxButton Text="人工完成清設備 64"
+                                      RenderStyle="ButtonRenderStyle.Danger"
+                                      Enabled="@_canComplete(1 << 6)"
+                                      Click="@(() => _setMissionCompleted(1 << 6))" />
+                        </div>
+
+                    </div>
+                </Template>
+            </DxGridLayoutItem>
+            <DxGridLayoutItem Area="logs">
+                <Template>
+                    <div style="height: 100%; overflow: auto;">
+                        <DxGrid Data="@listLog"
+                                KeyFieldName="@nameof(LogTable.Id)"
+                                PageSize="20"
+                                CssClass="h-100">
+                            <Columns>
+                                <DxGridDataColumn FieldName="@nameof(LogTable.Equipment)" Caption="Equipment" />
+                                <DxGridDataColumn FieldName="@nameof(LogTable.LogType)" Caption="Type" />
+                                <DxGridDataColumn FieldName="@nameof(LogTable.Msg)" Caption="Msg" />
+                                <DxGridDataColumn FieldName="@nameof(LogTable.RecordTime)" Caption="Time" DisplayFormat="yyyy/MM/dd HH:mm:ss" />
+                            </Columns>
+                        </DxGrid>
+                    </div>
+                </Template>
+            </DxGridLayoutItem>
+        </Items>
+    </DxGridLayout>
+</div>
+
 
 @code {
+    [Parameter] public string TwistName { get; set; }
 
+    ETwist twist;
+    TwistingMachineTable twistTable { get; set; } = new TwistingMachineTable();
+    List<LogTable> listLog { get; set; } = new List<LogTable>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        IService.dgDcTwistUpdated += _handleDcTwistUpdated;
+        IService.dgLogsUpdated += _handleLogsUpdated;
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (!Enum.TryParse(TwistName, out twist))
+        {
+            Navigation.NavigateTo("/");
+            return;
+        }
+
+        LoadPageData();
+    }
+
+    void LoadPageData()
+    {
+        twistTable = IService.GetTwistTableInQueue(twist);
+        listLog = IService.GetListLogTableInQueue(twist);
+    }
+
+    bool _canComplete(int completedBit)
+    {
+        return twistTable.MissionStartedInform == completedBit && twistTable.MissionCompletedInform != completedBit;
+    }
+
+    void _setAutoMode(int mode)
+    {
+        IService.SetAutoManualMode(twist, mode);
+    }
+
+    void _setMissionCompleted(int completed)
+    {
+        if (!_canComplete(completed))
+            return;
+
+        IService.SetMissionCompleted(twist, completed);
+    }
+
+    #region model 狀態參數對照表
+
+    static string _toAutoModeText(int mode)
+    {
+        return mode == 1 ? "Auto 1" : mode == 0 ? "Manual 0" : "-";
+    }
+
+    static string _toProcessStateText(int value)
+    {
+        switch (value)
+        {
+            case 0: return "None 0";
+            case 1 << 0: return "預備運行 1";
+            case 1 << 1: return "AMR上料(Cake) 2";
+            case 1 << 2: return "人工上空Bobbin與繞線 4";
+            case 1 << 3: return "撚紗中 8";
+            case 1 << 4: return "人工剪線繞管與清設備 16";
+            case 1 << 5: return "AMR下料(Bobbin) 32";
+            case 1 << 6: return "AMR下料(Cake) 64";
+            case 1 << 7: return "人工清設備 128";
+            default: return $"Unknown {value}";
+        }
+    }
+
+    static string _toMachineStatusText(int value)
+    {
+        if (value == 0)
+            return "None 0";
+        List<string> list = new List<string>();
+        if ((value & (1 << 0)) != 0) list.Add("有Bobbin在軸上");
+        if ((value & (1 << 1)) != 0) list.Add("有Cake在軸上");
+        if ((value & (1 << 4)) != 0) list.Add("即將滿管通知");
+        if ((value & (1 << 5)) != 0) list.Add("已滿管");
+        if ((value & (1 << 6)) != 0) list.Add("下料要求");
+        if ((value & (1 << 11)) != 0) list.Add("自動模式");
+        if ((value & (1 << 12)) != 0) list.Add("紗線斷線");
+        if ((value & (1 << 13)) != 0) list.Add("撚紗異常警告");
+        if ((value & (1 << 14)) != 0) list.Add("撚紗錯誤已停止");
+        if ((value & (1 << 15)) != 0) list.Add("電源開啟");
+        if (list.Count == 0)
+            return $"Unknown {value}";
+        return string.Join(", ", list);
+    }
+
+    static string _toMissionStartedText(int value)
+    {
+        switch (value)
+        {
+            case 0: return "None 0";
+            case 1 << 0: return "通知AMR上Cake 1";
+            case 1 << 1: return "通知人工上Bobbin與繞線 2";
+            case 1 << 2: return "開始撚紗 4";
+            case 1 << 3: return "通知人工剪線收線 8";
+            case 1 << 4: return "通知AMR下Bobbin 16";
+            case 1 << 5: return "通知AMR下Cake 32";
+            case 1 << 6: return "通知人工清設備 64";
+            default: return $"Unknown {value}";
+        }
+    }
+
+    static string _toMissionCompletedText(int value)
+    {
+        switch (value)
+        {
+            case 0: return "None 0";
+            case 1 << 0: return "AMR完成Cake放置 1";
+            case 1 << 1: return "人工完成上Bobbin與繞線 2";
+            case 1 << 2: return "撚紗完成 4";
+            case 1 << 3: return "人工完成剪線收線 8";
+            case 1 << 4: return "AMR完成下Bobbin 16";
+            case 1 << 5: return "AMR完成下Cake 32";
+            case 1 << 6: return "人工完成清設備 64";
+            default: return $"Unknown {value}";
+        }
+    }
+
+    #endregion
+
+    async Task _handleDcTwistUpdated(Dictionary<ETwist, TwistingMachineTable> data)
+    {
+        if (data.TryGetValue(twist, out var table))
+        {
+            twistTable = table;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    async Task _handleLogsUpdated(List<LogTable> list)
+    {
+        listLog = list.Where(x => x.Equipment == twist.ToString()).ToList();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        IService.dgDcTwistUpdated -= _handleDcTwistUpdated;
+        IService.dgLogsUpdated -= _handleLogsUpdated;
+    }
 }

@@ -10,6 +10,8 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data.TwistRegula
 
         Task NotifyTwistUpdate();
 
+        Task NotifyLogUpdate();
+
         Task WriteNLogError(string log);
 
         Task WriteNLogInform(string log);
