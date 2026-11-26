@@ -1,0 +1,224 @@
+﻿@using TGI_TwistingMachine_Test_BlazorProject.EFModel
+@using TGI_TwistingMachine_Test_BlazorProject.EquipName.TwistingMachine
+@using TGI_TwistingMachine_Test_BlazorProject.Service.TwistMissionService
+@inject ITwistMissionService IService
+@implements IDisposable
+
+<DxGrid Data="@listTwistStatusItem"
+        KeyFieldName="@nameof(TwistStatusItem.Twist)"
+        PageSize="12">
+    <Columns>
+        <DxGridDataColumn FieldName="@nameof(TwistStatusItem.Twist)" Caption="Twist" />
+        <DxGridDataColumn FieldName="@nameof(TwistStatusItem.MachineNumber)" Caption="Machine Number" />
+        <DxGridDataColumn FieldName="@nameof(TwistStatusItem.AutoModeText)" Caption="Auto Mode" />
+        <DxGridDataColumn FieldName="@nameof(TwistStatusItem.ProcessStateText)" Caption="Process State" />
+        <DxGridDataColumn FieldName="@nameof(TwistStatusItem.MachineStatusText)" Caption="Machine Status" />
+        <DxGridDataColumn FieldName="@nameof(TwistStatusItem.MissionStartedInformText)" Caption="Started Inform" />
+        <DxGridDataColumn FieldName="@nameof(TwistStatusItem.MissionCompletedInformText)" Caption="Completed Inform" />
+        <DxGridDataColumn FieldName="@nameof(TwistStatusItem.CakePortsCount)" Caption="Cake Ports Count" />
+        <DxGridDataColumn FieldName="@nameof(TwistStatusItem.BobbinPortsCount)" Caption="Bobbin Ports Count" />
+    </Columns>
+</DxGrid>
+
+@code {
+    List<TwistStatusItem> listTwistStatusItem { get; set; } = new List<TwistStatusItem>();
+
+    #region model
+
+    public class TwistStatusItem
+    {
+        public ETwist Twist { get; set; }
+        public int MachineNumber { get; set; }
+        public int AutoMode { get; set; }
+        public string AutoModeText => AutoMode == 1 ? "Auto 1" : AutoMode == 0 ? "Manual 0" : "-";
+        public int ProcessState { get; set; }
+        public string ProcessStateText => _toProcessStateText(ProcessState);
+        public int MachineStatus { get; set; }
+        public string MachineStatusText => _toMachineStatusText(MachineStatus);
+        public int MissionStartedInform { get; set; }
+        public string MissionStartedInformText => _toMissionStartedText(MissionStartedInform);
+        public int MissionCompletedInform { get; set; }
+        public string MissionCompletedInformText => _toMissionCompletedText(MissionCompletedInform);
+        public int CakePortsCount { get; set; }
+        public int BobbinPortsCount { get; set; }
+
+        #region 狀態列表一（互斥）
+
+        static string _toProcessStateText(int value)
+        {
+            switch (value)
+            {
+                case 0:
+                    return "None 0";
+                case 1 << 0:
+                    return "預備運行 1";
+                case 1 << 1:
+                    return "AMR上料(Cake) 2";
+                case 1 << 2:
+                    return "人工上空Bobbin與繞線 4";
+                case 1 << 3:
+                    return "撚紗中 8";
+                case 1 << 4:
+                    return "人工剪線繞管與清設備 16";
+                case 1 << 5:
+                    return "AMR下料(Bobbin) 32";
+                case 1 << 6:
+                    return "AMR下料(Cake) 64";
+                case 1 << 7:
+                    return "人工清設備 128";
+                default:
+                    return $"Unknown {value}";
+            }
+        }
+
+        #endregion
+
+        #region 狀態列表二（可多個 bit）
+        
+        static string _toMachineStatusText(int value)
+        {
+            if (value == 0)
+                return "None 0";
+
+            List<string> list = new List<string>();
+            if ((value & (1 << 0)) != 0) list.Add("有Bobbin在軸上");
+            if ((value & (1 << 1)) != 0) list.Add("有Cake在軸上");
+            if ((value & (1 << 4)) != 0) list.Add("即將滿管通知");
+            if ((value & (1 << 5)) != 0) list.Add("已滿管");
+            if ((value & (1 << 6)) != 0) list.Add("下料要求");
+            if ((value & (1 << 11)) != 0) list.Add("自動模式");
+            if ((value & (1 << 12)) != 0) list.Add("紗線斷線");
+            if ((value & (1 << 13)) != 0) list.Add("撚紗異常警告");
+            if ((value & (1 << 14)) != 0) list.Add("撚紗錯誤已停止");
+            if ((value & (1 << 15)) != 0) list.Add("電源開啟");
+            if (list.Count == 0)
+                return $"Unknown {value}";
+
+            return string.Join(", ", list);
+        }
+
+        #endregion
+
+        #region 通知作業列表（互斥）
+
+        static string _toMissionStartedText(int value)
+        {
+            switch (value)
+            {
+                case 0:
+                    return "None 0";
+                case 1 << 0:
+                    return "通知AMR上Cake 1";
+                case 1 << 1:
+                    return "通知人工上Bobbin與繞線 2";
+                case 1 << 2:
+                    return "開始撚紗 4";
+                case 1 << 3:
+                    return "通知人工剪線收線 8";
+                case 1 << 4:
+                    return "通知AMR下Bobbin 16";
+                case 1 << 5:
+                    return "通知AMR下Cake 32";
+                case 1 << 6:
+                    return "通知人工清設備 64";
+                default:
+                    return $"Unknown {value}";
+            }
+        }
+
+        #endregion
+
+        #region 完成作業列表（互斥）
+        
+        static string _toMissionCompletedText(int value)
+        {
+            switch (value)
+            {
+                case 0:
+                    return "None 0";
+                case 1 << 0:
+                    return "AMR完成Cake放置 1";
+                case 1 << 1:
+                    return "人工完成上Bobbin與繞線 2";
+                case 1 << 2:
+                    return "撚紗完成 4";
+                case 1 << 3:
+                    return "人工完成剪線收線 8";
+                case 1 << 4:
+                    return "AMR完成下Bobbin 16";
+                case 1 << 5:
+                    return "AMR完成下Cake 32";
+                case 1 << 6:
+                    return "人工完成清設備 64";
+                default:
+                    return $"Unknown {value}";
+            }
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    protected override void OnInitialized()
+    {
+        IService.dgDcTwistUpdated += _handleDcTwistUpdated;
+        LoadPageData();
+    }
+
+    void LoadPageData()
+    {
+        List<TwistStatusItem> _listTwist = new List<TwistStatusItem>();
+
+        foreach (ETwist twist in Enum.GetValues(typeof(ETwist)))
+        {
+            TwistingMachineTable table = IService.GetTwistTableInQueue(twist);
+
+            _listTwist.Add(_toTwistStatusItem(twist, table));
+        }
+
+        listTwistStatusItem = _listTwist.ToList();
+    }
+
+    TwistStatusItem _toTwistStatusItem(ETwist twist, TwistingMachineTable table)
+    {
+        return new TwistStatusItem
+        {
+            Twist = twist,
+            MachineNumber = table.MachineNumber,
+            ProcessState = table.ProcessState,
+            MachineStatus = table.MachineStatus,
+            MissionStartedInform = table.MissionStartedInform,
+            MissionCompletedInform = table.MissionCompletedInform,
+            AutoMode = table.AutoMode,
+            CakePortsCount = table.CakeCount,
+            BobbinPortsCount = table.BobbinCount
+        };
+    }
+
+    async Task _handleDcTwistUpdated(Dictionary<ETwist, TwistingMachineTable> data)
+    {
+        List<TwistStatusItem> _listTwist = new List<TwistStatusItem>();
+
+        foreach (ETwist twist in Enum.GetValues(typeof(ETwist)))
+        {
+            if (data.TryGetValue(twist, out var value))
+            {
+                _listTwist.Add(_toTwistStatusItem(twist, value));
+            }
+            else
+            {
+                _listTwist.Add(_toTwistStatusItem(twist, new TwistingMachineTable()));
+            }
+        }
+
+        listTwistStatusItem = _listTwist.ToList();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        IService.dgDcTwistUpdated -= _handleDcTwistUpdated;
+    }
+}
