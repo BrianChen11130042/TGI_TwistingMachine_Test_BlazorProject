@@ -13,11 +13,11 @@
 <div style="height: calc(100vh - 140px);">
     <DxGridLayout CssClass="h-100"
                   ColumnSpacing="1rem"
-                  RowSpacing="1rem"
+                  RowSpacing="2rem"
                   style="height: 100%;">
         <Rows>
-            <DxGridLayoutRow Areas="status status" Height="45%" />
-            <DxGridLayoutRow Areas="actions logs" Height="55%" />
+            <DxGridLayoutRow Areas="status status" Height="55%" />
+            <DxGridLayoutRow Areas="actions logs" Height="45%" />
         </Rows>
         <Columns>
             <DxGridLayoutColumn Width="40%" />
@@ -26,7 +26,7 @@
         <Items>
             <DxGridLayoutItem Area="status">
                 <Template>
-                    <div style="height: 100%; overflow: auto; padding-right: 4px;">
+                    <div style="height: 100%; overflow: auto; padding-right: 4px; padding-bottom: 0.75rem">
                         <DxFormLayout CaptionPosition="CaptionPosition.Horizontal">
                             <DxFormLayoutItem Caption="Twist" ColSpanMd="4">
                                 <DxTextBox Text="@twist.ToString()" ReadOnly="true" />
