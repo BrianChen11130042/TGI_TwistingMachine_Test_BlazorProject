@@ -64,74 +64,68 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
 
         public bool IsAmrLoadSilkCake()
         {
-            if(IDataLib.TwistTable.MissionStartedInform == amrLoadSilkCake)
-            {
-                return true;
-            }
-            else
-            {
+            if (IDataLib.TwistTable.MissionStartedInform != amrLoadSilkCake)
                 return false;
-            }
+
+            if (IDataLib.TwistTable.MissionCompletedInform == amrLoadSilkCake)
+                return false;
+
+            return true;
         }
 
         public bool IsPersonnelLoadNoSilkBobbin()
         {
-            if(IDataLib.TwistTable.MissionStartedInform == personnelLoadNoSilkBobbin)
-            {
-                return true;
-            }
-            else
-            {
+            if (IDataLib.TwistTable.MissionStartedInform != personnelLoadNoSilkBobbin)
                 return false;
-            }
+
+            if (IDataLib.TwistTable.MissionCompletedInform == personnelLoadNoSilkBobbin)
+                return false;
+
+            return true;
         }
 
         public bool IsPersonnelCutAndCollect()
         {
-            if(IDataLib.TwistTable.MissionStartedInform == personnelCutAndCollect)
-            {
-                return true;
-            }
-            else
-            {
+            if (IDataLib.TwistTable.MissionStartedInform != personnelCutAndCollect)
                 return false;
-            }
+
+            if (IDataLib.TwistTable.MissionCompletedInform == personnelCutAndCollect)
+                return false;
+
+            return true;
         }
 
         public bool IsAmrUnloadSilkBobbin()
         {
-            if(IDataLib.TwistTable.MissionStartedInform == amrUnloadSilkBobbin)
-            {
-                return true;
-            }
-            else
-            {
+            if (IDataLib.TwistTable.MissionStartedInform != amrUnloadSilkBobbin)
                 return false;
-            }
+
+            if (IDataLib.TwistTable.MissionCompletedInform == amrUnloadSilkBobbin)
+                return false;
+
+            return true;
         }
 
         public bool IsAmrUnloadNoSilkCake()
         {
-            if(IDataLib.TwistTable.MissionStartedInform == amrUnloadNoSilkCake)
-            {
-                return true;
-            }
-            else
-            {
+            if (IDataLib.TwistTable.MissionStartedInform != amrUnloadNoSilkCake)
                 return false;
-            }
+
+            if (IDataLib.TwistTable.MissionCompletedInform == amrUnloadNoSilkCake)
+                return false;
+
+            return true;
         }
 
         public bool IsPersonnelCleanMachine()
         {
-            if(IDataLib.TwistTable.MissionStartedInform == personnelCleanMachine)
-            {
-                return true;
-            }
-            else
-            {
+            if (IDataLib.TwistTable.MissionStartedInform != personnelCleanMachine)
                 return false;
-            }
+
+            if (IDataLib.TwistTable.MissionCompletedInform == personnelCleanMachine)
+                return false;
+
+            return true;
         }
     }
 
