@@ -2,8 +2,10 @@
 @using CommonRazorLibraryB.UIComponentTools.ToastMessage
 @using TGI_TwistingMachine_Test_BlazorProject.EFModel
 @using TGI_TwistingMachine_Test_BlazorProject.EquipName.TwistingMachine
+@using TGI_TwistingMachine_Test_BlazorProject.Service.MachineService
 @using TGI_TwistingMachine_Test_BlazorProject.Service.TwistMissionService
-@inject ITwistMissionService IService
+@inject ITwistMissionService IMissionService
+@inject IMachineService IMachineService
 @inject NavigationManager Navigation
 @inject IToastMessage IToast
 @implements IDisposable
@@ -166,8 +168,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        IService.dgDcTwistUpdated += _handleDcTwistUpdated;
-        IService.dgLogsUpdated += _handleLogsUpdated;
+        IMissionService.dgDcTwistUpdated += _handleDcTwistUpdated;
+        IMissionService.dgLogsUpdated += _handleLogsUpdated;
+        IMissionService.dgCmdResult += _handleCmdResult;
+        IMachineService.dgDisconnect += _handleDisconnect;
     }
 
     protected override void OnParametersSet()
@@ -183,8 +187,8 @@
 
     void LoadPageData()
     {
-        twistTable = IService.GetTwistTableInQueue(twist);
-        listLog = IService.GetListLogTableInQueue(twist);
+        twistTable = IMissionService.GetTwistTableInQueue(twist);
+        listLog = IMissionService.GetListLogTableInQueue(twist);
     }
 
     bool _canComplete(int completedBit)
@@ -192,9 +196,9 @@
         return twistTable.MissionStartedInform == completedBit && twistTable.MissionCompletedInform != completedBit;
     }
 
-    void _setAutoMode(int mode)
+    async Task _setAutoMode(int mode)
     {
-        IService.SetAutoManualMode(twist, mode);
+        await IMissionService.SetAutoManualMode(twist, mode);
     }
 
     void _setMissionCompleted(int completed)
@@ -202,7 +206,7 @@
         if (!_canComplete(completed))
             return;
 
-        IService.SetMissionCompleted(twist, completed);
+        IMissionService.SetMissionCompleted(twist, completed);
     }
 
     #region model 狀態參數對照表
@@ -300,9 +304,24 @@
         await InvokeAsync(StateHasChanged);
     }
 
+    async Task _handleCmdResult(bool success, string msg)
+    {
+        if (success)
+            IToast.NotifySuccess(msg);
+        else
+            IToast.NotifyError(msg);
+    }
+
+    async Task _handleDisconnect(string msg)
+    {
+        IToast.NotifyError(msg);
+    }
+
     public void Dispose()
     {
-        IService.dgDcTwistUpdated -= _handleDcTwistUpdated;
-        IService.dgLogsUpdated -= _handleLogsUpdated;
+        IMissionService.dgDcTwistUpdated -= _handleDcTwistUpdated;
+        IMissionService.dgLogsUpdated -= _handleLogsUpdated;
+        IMissionService.dgCmdResult -= _handleCmdResult;
+        IMachineService.dgDisconnect -= _handleDisconnect;
     }
 }

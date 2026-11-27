@@ -9,12 +9,14 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Service.TwistMissionService
 
         List<LogTable> GetListLogTableInQueue(ETwist twist);
 
-        bool SetMissionCompleted(ETwist twist, int completed);
+        void SetMissionCompleted(ETwist twist, int completed);
 
-        bool SetAutoManualMode(ETwist twist, int mode);
+        Task SetAutoManualMode(ETwist twist, int mode);
 
         event dgLogsUpdated dgLogsUpdated;
 
         event dgDcTwistUpdated dgDcTwistUpdated;
+
+        event dgCmdResult dgCmdResult;
     }
 }

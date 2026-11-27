@@ -1,7 +1,11 @@
-﻿@using TGI_TwistingMachine_Test_BlazorProject.EFModel
+﻿@using CommonRazorLibraryB.UIComponentTools.ToastMessage
+@using TGI_TwistingMachine_Test_BlazorProject.EFModel
 @using TGI_TwistingMachine_Test_BlazorProject.EquipName.TwistingMachine
+@using TGI_TwistingMachine_Test_BlazorProject.Service.MachineService
 @using TGI_TwistingMachine_Test_BlazorProject.Service.TwistMissionService
-@inject ITwistMissionService IService
+@inject ITwistMissionService IMissionService
+@inject IMachineService IMachineService
+@inject IToastMessage IToast
 @implements IDisposable
 
 <DxGrid Data="@listTwistStatusItem"
@@ -74,7 +78,7 @@
         #endregion
 
         #region 狀態列表二（可多個 bit）
-        
+
         static string _toMachineStatusText(int value)
         {
             if (value == 0)
@@ -129,7 +133,7 @@
         #endregion
 
         #region 完成作業列表（互斥）
-        
+
         static string _toMissionCompletedText(int value)
         {
             switch (value)
@@ -162,7 +166,8 @@
 
     protected override void OnInitialized()
     {
-        IService.dgDcTwistUpdated += _handleDcTwistUpdated;
+        IMissionService.dgDcTwistUpdated += _handleDcTwistUpdated;
+        IMachineService.dgDisconnect += _handleDisconnect;
         LoadPageData();
     }
 
@@ -172,7 +177,7 @@
 
         foreach (ETwist twist in Enum.GetValues(typeof(ETwist)))
         {
-            TwistingMachineTable table = IService.GetTwistTableInQueue(twist);
+            TwistingMachineTable table = IMissionService.GetTwistTableInQueue(twist);
 
             _listTwist.Add(_toTwistStatusItem(twist, table));
         }
@@ -217,8 +222,14 @@
         await InvokeAsync(StateHasChanged);
     }
 
+    async Task _handleDisconnect(string msg)
+    {
+        IToast.NotifyError(msg);
+    }
+
     public void Dispose()
     {
-        IService.dgDcTwistUpdated -= _handleDcTwistUpdated;
+        IMissionService.dgDcTwistUpdated -= _handleDcTwistUpdated;
+        IMachineService.dgDisconnect -= _handleDisconnect;
     }
 }

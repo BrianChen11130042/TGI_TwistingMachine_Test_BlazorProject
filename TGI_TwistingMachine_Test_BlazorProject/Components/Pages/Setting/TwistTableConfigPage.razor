@@ -88,6 +88,7 @@
     {
         IService.dgConfigResult += _handleConfigResult;
         IService.dgRefreshConfigPage += _handleRefreshPage;
+        IService.dgDisconnect += _handleDisconnect;
 
         await LoadPageData();
     }
@@ -263,9 +264,15 @@
         await InvokeAsync(StateHasChanged);
     }
 
+    async Task _handleDisconnect(string msg)
+    {
+        IToast.NotifyError(msg);
+    }
+
     public void Dispose()
     {
         IService.dgConfigResult -= _handleConfigResult;
         IService.dgRefreshConfigPage -= _handleRefreshPage;
+        IService.dgDisconnect -= _handleDisconnect;
     }
 }

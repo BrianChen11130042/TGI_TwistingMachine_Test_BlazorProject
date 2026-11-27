@@ -25,11 +25,6 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
             return pack.IsGetTwistTableInQueue();
         }
 
-        public bool IsAutoModeSwitch()
-        {
-            return pack.IsAutoModeSwitch();
-        }
-
         public bool IsAmrLoadSilkCake()
         {
             return pack.IsAmrLoadSilkCake();
@@ -58,21 +53,6 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
         public bool IsPersonnelCleanMachine()
         {
             return pack.IsPersonnelCleanMachine();
-        }
-
-        public Task<bool> SetAutoModeSwitch()
-        {
-            return pack.SetAutoModeSwitch();
-        }
-
-        public Task<bool> AddLogAutoModeSwitch()
-        {
-            return pack.AddLogAutoModeSwitch();
-        }
-
-        public void ResetCmdAutoMode()
-        {
-            pack.ResetCmdAutoMode();
         }
 
         public Task<bool> AddAmrLoadSilkCakeAssignTable()
@@ -248,8 +228,6 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
         None,
         CheckMission,
 
-        AutoModeSwitch,
-
         AmrLoadSilkCake,
         PersonnelLoadNoSilkBobbin,
         PersonnelCutAndCollect,
@@ -282,11 +260,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
                                 break;
                             }
 
-                            if (IsAutoModeSwitch())
-                            {
-                                Set(ETwistMission.AutoModeSwitch, 0);
-                            }
-                            else if (IsAmrLoadSilkCake())
+                            if (IsAmrLoadSilkCake())
                             {
                                 Set(ETwistMission.AmrLoadSilkCake, 0);
                             }
@@ -313,33 +287,6 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Tasks.TwistMission
                             else
                             {
                                 Set(ETwistMission.CheckMission, 0);
-                            }
-                            break;
-                    }
-                    break;
-
-                case ETwistMission.AutoModeSwitch:
-                    switch(S3)
-                    {
-                        case 0:
-                            if(await SetAutoModeSwitch())
-                            {
-                                if(await AddLogAutoModeSwitch())
-                                {
-                                    ResetCmdAutoMode();
-
-                                    Set(ETwistMission.CheckMission, 0);
-                                }
-                                else
-                                {
-                                    SaveState();
-                                    Set(ES1.Error, ETwistMission.None, 0);
-                                }
-                            }
-                            else
-                            {
-                                SaveState();
-                                Set(ES1.Error, ETwistMission.None, 0);
                             }
                             break;
                     }

@@ -18,10 +18,12 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Service.TwistMissionService
 
         public event dgLogsUpdated dgLogsUpdated;
         public event dgDcTwistUpdated dgDcTwistUpdated;
+        public event dgCmdResult dgCmdResult;
     }
 
     public delegate Task dgLogsUpdated(List<LogTable> listLog);
     public delegate Task dgDcTwistUpdated(Dictionary<ETwist, TwistingMachineTable> dcTwist);
+    public delegate Task dgCmdResult(bool success, string msg);
 
     public partial class TwistMissionService : ITwistMissionService
     {
@@ -35,14 +37,34 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Service.TwistMissionService
             return scope.twistMissionApp.GetListLogTableInQueue(twist);
         }
 
-        public bool SetMissionCompleted(ETwist twist, int completed)
+        public void SetMissionCompleted(ETwist twist, int completed)
         {
-            return scope.twistMissionApp.SetMissionCompleted(twist, completed);
+            if(scope.twistMissionApp.SetMissionCompleted(twist, completed))
+            {
+                dgCmdResult?.Invoke(true, $"Set {twist} mission {completed} completed successfully");
+            }
+            else
+            {
+                dgCmdResult?.Invoke(false, $"Failed to set {twist} mission {completed} completed");
+            }
         }
 
-        public bool SetAutoManualMode(ETwist twist, int mode)
+        public async Task SetAutoManualMode(ETwist twist, int mode)
         {
-            return scope.twistMissionApp.SetAutoManualMode(twist, mode);
+            if(mode < 0 || mode > 1)
+            {
+                dgCmdResult?.Invoke(false, $"Failed to set {twist} mode {mode}");
+                return;
+            }
+
+            if (await scope.twistMissionApp.SetAutoManualMode(twist, mode))
+            {
+                dgCmdResult?.Invoke(true, $"Set {twist} mode {mode} successfully");
+            }
+            else
+            {
+                dgCmdResult?.Invoke(false, $"Failed to set {twist} mode {mode}");
+            }
         }
     }
 

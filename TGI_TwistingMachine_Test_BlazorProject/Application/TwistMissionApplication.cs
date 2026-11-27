@@ -1,5 +1,6 @@
 ﻿using CommonRazorLibraryB.Library.TGITwistingMachine.Adapter;
 using CommonRazorLibraryB.Library.TGITwistingMachine.Package;
+using CommonRazorLibraryB.Tools.NLogWritter;
 using TGI_TwistingMachine_Test_BlazorProject.EFModel;
 using TGI_TwistingMachine_Test_BlazorProject.EquipName.TwistingMachine;
 using TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data.TwistMission;
@@ -19,11 +20,14 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Application
 
         readonly Dictionary<ETwist, ITwistMissionDataLibrary> dcTwistMissionDataLib;
 
+        readonly INLogObservable INLogObser;
+
         public TwistMissionApplication(ITgiTwistPackage<ETwist> ITwistPack,
                                        ITgiTwistAdapter<ETwist> ITwistOp,
                                        ITwistTableLibrary ITwistTableLib,
                                        ILogsTableLibrary ILogsTableLib,
-                                       Dictionary<ETwist, ITwistMissionDataLibrary> dcTwistMissionDataLib)
+                                       Dictionary<ETwist, ITwistMissionDataLibrary> dcTwistMissionDataLib,
+                                       INLogObservable INLogObser)
         {
             this.ITwistPack = ITwistPack;
             this.ITwistOp = ITwistOp;
@@ -32,6 +36,8 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Application
             this.ILogsTableLib = ILogsTableLib;
 
             this.dcTwistMissionDataLib = dcTwistMissionDataLib;
+
+            this.INLogObser = INLogObser;
         }
 
         public async Task InitDcTwistMachineNumber()
@@ -98,14 +104,79 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Application
             return true;
         }
 
-        public bool SetAutoManualMode(ETwist twist, int mode)
+        public async Task<bool> SetAutoManualMode(ETwist twist, int mode)
         {
-            if (!dcTwistMissionDataLib.TryGetValue(twist, out var dataLib))
+            if (await _setAutoModeSwitch(twist, mode))
+            {
+                if(await  _addLogAutoModeSwitch(twist, mode))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
                 return false;
+            }
+        }
 
-            dataLib.CmdAutoMode = mode;
+        async Task<bool> _setAutoModeSwitch(ETwist twist, int mode)
+        {
+            await ITwistPack.Packages[twist].gate.WaitAsync();
 
-            return true;
+            try
+            {
+                ITwistPack.Packages[twist].property.set.autoMode = (ushort)mode;
+
+                if (await ITwistOp.SetAutoMode(twist))
+                {
+                    return true;
+                }
+                else
+                {
+                    string nlog = ITwistPack.Packages[twist].errorLog;
+                    await INLogObser.NotifyNLog(ENLogLevel.Error, nlog);
+                    return false;
+                }
+            }
+            finally
+            {
+                ITwistPack.Packages[twist].gate.Release();
+            }
+        }
+
+        async Task<bool> _addLogAutoModeSwitch(ETwist twist, int mode)
+        {
+            string temp = $"Set Auto/Manual Mode {mode} Success";
+
+            var result = await ILogsTableLib.AddLogData(_getLogTable(twist.ToString(), "Inform", temp));
+
+            if (result.status)
+            {
+                return result.status;
+            }
+            else
+            {
+                string nlog = result.msg;
+                await INLogObser.NotifyNLog(ENLogLevel.Error, nlog);
+                return result.status;
+            }
+        }
+
+        LogTable _getLogTable(string equip, string logType, string msg)
+        {
+            LogTable table = new LogTable()
+            {
+                LogType = logType,
+                Equipment = equip,
+                Msg = msg,
+                RecordTime = DateTime.Now,
+            };
+
+            return table;
         }
     }
 

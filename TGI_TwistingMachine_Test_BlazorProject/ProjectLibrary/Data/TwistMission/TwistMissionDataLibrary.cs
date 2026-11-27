@@ -50,24 +50,6 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data.TwistMissio
             }
         }
 
-        // 99 : 復歸 
-        // 0 : Manual 
-        // 1 : Auto
-
-        int _cmdAutoMode { get; set; } = 99;
-
-        public int CmdAutoMode 
-        {
-            get
-            {
-                return _cmdAutoMode;
-            }
-            set
-            {
-                _cmdAutoMode = value;
-            }
-        }
-
         // 0 : 復歸 
         // 1 : AMR完成上Silk Cake 
         // 2 : 人工完成上NoSilk Bobbin 
@@ -76,7 +58,6 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data.TwistMissio
         // 16 : Amr完成下Silk Bobbin
         // 32 : Amr完成下NoSilk Cake 
         // 64 : 人工完成清設備
-
         int _cmdMissionCompleted { get; set; } = 0;
 
         public int CmdMissionCompleted

@@ -6,8 +6,6 @@
 
         bool IsGetTwistTableInQueue();
 
-        bool IsAutoModeSwitch();
-
         bool IsAmrLoadSilkCake();
 
         bool IsPersonnelLoadNoSilkBobbin();
@@ -19,11 +17,6 @@
         bool IsAmrUnloadNoSilkCake();
 
         bool IsPersonnelCleanMachine();
-
-        //Auto Mode Switch
-        Task<bool> SetAutoModeSwitch();
-
-        Task<bool> AddLogAutoModeSwitch();
 
         //AmrLoadSilkCake
         Task<bool> AddAmrLoadSilkCakeAssignTable();
@@ -96,8 +89,6 @@
         Task<bool> AddLogPersonnelCleanMachineFinish();
 
         //Common
-        void ResetCmdAutoMode();
-
         void ResetCmdMissionCompleted();
     }
 }

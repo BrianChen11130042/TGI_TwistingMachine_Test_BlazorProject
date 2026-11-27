@@ -82,7 +82,7 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Application
 
         public async Task HandleDisconnect()
         {
-            dgSysDisconnect?.Invoke(string.Empty);
+            dgSysDisconnect?.Invoke("System disconnected");
         }
     }
 }

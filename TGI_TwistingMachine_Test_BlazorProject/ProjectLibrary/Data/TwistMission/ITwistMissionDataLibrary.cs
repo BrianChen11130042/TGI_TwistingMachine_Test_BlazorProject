@@ -7,11 +7,6 @@ namespace TGI_TwistingMachine_Test_BlazorProject.ProjectLibrary.Data.TwistMissio
     {
         int MachineNumber { get; set; }
 
-        // 99 : 復歸 
-        // 0 : Manual 
-        // 1 : Auto
-        int CmdAutoMode { get; set; }
-
         // 0 : 復歸 
         // 1 : AMR完成上Silk Cake
         // 2 : 人工完成上NoSilk Bobbin 

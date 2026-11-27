@@ -20,7 +20,8 @@ namespace TGI_TwistingMachine_Test_BlazorProject.Scope
                                                           twistLibrary,
                                                           twistTableLibrary,
                                                           logsTableLibrary,
-                                                          _getDcTwistMissionDataLibrary());
+                                                          _getDcTwistMissionDataLibrary(),
+                                                          observerLibrary);
         }
 
         Dictionary<ETwist, ITwistMissionDataLibrary> _getDcTwistMissionDataLibrary()

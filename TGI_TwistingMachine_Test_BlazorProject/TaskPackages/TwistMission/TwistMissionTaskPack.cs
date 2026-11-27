@@ -62,25 +62,6 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
             return IDataLib.GetTwistTableInQueue();
         }
 
-        public bool IsAutoModeSwitch()
-        {
-            if (IDataLib.CmdAutoMode != 0 && IDataLib.CmdAutoMode != 1)
-            {
-                IDataLib.CmdAutoMode = 99;
-                return false;
-            }
-
-            if (IDataLib.CmdAutoMode != IDataLib.TwistTable.AutoMode)
-            {
-                return true;
-            }
-            else
-            {
-                IDataLib.CmdAutoMode = 99;
-                return false;
-            }
-        }
-
         public bool IsAmrLoadSilkCake()
         {
             if(IDataLib.TwistTable.MissionStartedInform == amrLoadSilkCake)
@@ -151,41 +132,6 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
             {
                 return false;
             }
-        }
-    }
-
-    public partial class TwistMissionTaskPack<ETwist>
-    {
-        public async Task<bool> SetAutoModeSwitch()
-        {
-            await ITwistPack.Packages[twist].gate.WaitAsync();
-
-            try
-            {
-                ITwistPack.Packages[twist].property.set.autoMode = (ushort)IDataLib.CmdAutoMode;
-
-                if (await ITwistOp.SetAutoMode(twist))
-                {
-                    return true;
-                }
-                else
-                {
-                    string nlog = ITwistPack.Packages[twist].errorLog;
-                    await IDataLib.WriteNLogError(nlog);
-                    return false;
-                }
-            }
-            finally
-            {
-                ITwistPack.Packages[twist].gate.Release();
-            }
-        }
-
-        public async Task<bool> AddLogAutoModeSwitch()
-        {
-            string temp = $"Set Auto/Manual Mode {IDataLib.CmdAutoMode} Success";
-
-            return await IDataLib.AddLogTable(twist.ToString(), info, temp);
         }
     }
 
@@ -574,11 +520,6 @@ namespace TGI_TwistingMachine_Test_BlazorProject.TaskPackages.TwistMission
 
     public partial class TwistMissionTaskPack<ETwist>
     {
-        public void ResetCmdAutoMode()
-        {
-            IDataLib.CmdAutoMode = 99;
-        }
-
         public void ResetCmdMissionCompleted()
         {
             IDataLib.CmdMissionCompleted = 0;
